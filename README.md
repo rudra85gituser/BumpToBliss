@@ -270,10 +270,6 @@ https://expo.dev/go
 
 https://docs.expo.dev/router/introduction/
 
-## Expo Router Installation
-
-https://docs.expo.dev/router/installation/
-
 ---
 
 
