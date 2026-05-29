@@ -1,7 +1,14 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+# OS
+.DS_Store
 
-# dependencies
+# Node.js
 node_modules/
+npm-debug.log
+npm-debug.*
+yarn-debug.log
+yarn-debug.*
+yarn-error.log
+yarn-error.*
 
 # Expo
 .expo/
@@ -9,7 +16,43 @@ dist/
 web-build/
 expo-env.d.ts
 
-# Native
+# React Native / Metro
+.metro-health-check*
+
+# Generated native folders
+/ios
+/android
+
+# Android / IntelliJ
+build/
+.idea/
+.gradle/
+local.properties
+*.iml
+*.hprof
+.cxx/
+*.keystore
+!debug.keystore
+
+# Xcode / iOS
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.xcuserstate
+**/.xcode.env.local
+
+# Native signing / provisioning
 .kotlin/
 *.orig.*
 *.jks
@@ -17,27 +60,34 @@ expo-env.d.ts
 *.p12
 *.key
 *.mobileprovision
-
-# Metro
-.metro-health-check*
-
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# macOS
-.DS_Store
 *.pem
 
-# local env files
+# Fastlane
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
+
+# Bundles
+*.jsbundle
+
+# Ruby / CocoaPods
+**/Pods/
+/vendor/bundle/
+
+# Testing
+/coverage
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Local env files
 .env*.local
 
-# typescript
+# TypeScript
 *.tsbuildinfo
-
-example
-
-# generated native folders
-/ios
-/android
