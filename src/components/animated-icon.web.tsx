@@ -2,6 +2,8 @@ import { Image } from 'expo-image';
 import { StyleSheet, View } from 'react-native';
 import Animated, { Keyframe, Easing } from 'react-native-reanimated';
 
+import { ICON_SIZE, sharedStyles } from './animated-icon.styles';
+
 import classes from './animated-icon.module.css';
 const DURATION = 300;
 
@@ -78,31 +80,15 @@ const styles = StyleSheet.create({
     width: '100%',
     zIndex: 1000,
     position: 'absolute',
-    top: 128 / 2 + 138,
+    top: ICON_SIZE / 2 + 138,
   },
-  imageContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  glow: {
-    width: 201,
-    height: 201,
-    position: 'absolute',
-  },
-  iconContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 128,
-    height: 128,
-  },
-  image: {
-    position: 'absolute',
-    width: 76,
-    height: 71,
-  },
+  imageContainer: sharedStyles.imageContainer,
+  glow: sharedStyles.glow,
+  iconContainer: sharedStyles.iconContainer,
+  image: sharedStyles.image,
   background: {
-    width: 128,
-    height: 128,
+    width: ICON_SIZE,
+    height: ICON_SIZE,
     position: 'absolute',
   },
 });

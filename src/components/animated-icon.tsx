@@ -4,6 +4,8 @@ import { Dimensions, StyleSheet, View } from 'react-native';
 import Animated, { Easing, Keyframe } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
+import { ICON_SIZE, sharedStyles } from './animated-icon.styles';
+
 const INITIAL_SCALE_FACTOR = Dimensions.get('screen').height / 90;
 const DURATION = 600;
 
@@ -96,32 +98,18 @@ export function AnimatedIcon() {
 }
 
 const styles = StyleSheet.create({
-  imageContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  glow: {
-    width: 201,
-    height: 201,
-    position: 'absolute',
-  },
+  imageContainer: sharedStyles.imageContainer,
+  glow: sharedStyles.glow,
   iconContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 128,
-    height: 128,
+    ...sharedStyles.iconContainer,
     zIndex: 100,
   },
-  image: {
-    position: 'absolute',
-    width: 76,
-    height: 71,
-  },
+  image: sharedStyles.image,
   background: {
     borderRadius: 40,
     experimental_backgroundImage: `linear-gradient(180deg, #3C9FFE, #0274DF)`,
-    width: 128,
-    height: 128,
+    width: ICON_SIZE,
+    height: ICON_SIZE,
     position: 'absolute',
   },
   backgroundSolidColor: {

@@ -5,7 +5,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { PressedOpacity, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export function Collapsible({ children, title }: PropsWithChildren & { title: string }) {
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   pressedHeading: {
-    opacity: 0.7,
+    opacity: PressedOpacity,
   },
   button: {
     width: Spacing.four,
