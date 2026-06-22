@@ -254,6 +254,12 @@ npm install
 npx expo start --clear
 ```
 
+## Remove Codebase provided by EXPO
+
+```bash
+npm run reset-project
+```
+
 ---
 
 # References
