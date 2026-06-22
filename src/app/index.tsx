@@ -1,98 +1,159 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+"use client";
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import React from "react";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+/*
+import BabySizeCard from "@/app/babySizeCard";
+import BumpCard from "@/app/bumpCard";
+import GarbhaSanskarCard from "@/app/garbhaSanskarCard";
+import Header from "@/app/header";
+import HelpfulTipsCard from "@/app/helpfulTipsCard";
+import HomeScreenSymptom from "@/app/homeScreenSymptom";
+import MoodTracker from "@/app/moodTracker";
+import PlansCardHomeScreen from "@/app/plansCardHomeScreen";
+import PregnancyTipCard from "@/app/pregnancyTipCard";
+import ShopLinks from "@/app/shopLinks";
+import Testimonials from "@/app/testimonials";
+import UpcomingAppointment from "@/app/upcomingAppointment";
+import VideoCard from "@/app/videoCard";
+import WeeklyFAQ from "@/app/weeklyFAQ";
+*/
+import GarbhaSanskarFeature from "@/src/app/garbhaSanskar";
+
 
 export default function HomeScreen() {
+  const router = useRouter();
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header
+        <Header />
+         */}
+        
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+        <View style={styles.heroContainer}>
+          <Text style={styles.title}>Pregnancy Tracker</Text>
+          <Text style={styles.subtitle}>Track your pragnancy journey</Text>
+        </View>
+
+
+    {/* ACTION BUTTONS */}
+    {/*
+        <View style={styles.actionsContainer}>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => router.push("/auth/signup")}>
+            <Text style={styles.actionButtonText}>Sign Up</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => router.push("/plansCard")}>
+            <Text style={styles.actionButtonText}>Plans Card</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => router.push("/aiChatAssistant")}>
+            <Text style={styles.actionButtonText}>AI Chat Assistant</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.actionButton, styles.lastActionButton]}
+            onPress={() => router.push("/symptoms")}>
+            <Text style={styles.actionButtonText}>Symptoms Tracker</Text>
+          </TouchableOpacity>
+        </View>
+        */}
+
+
+
+  
+
+       <GarbhaSanskarFeature />
+
+        {/* COMPONENTS SHOWN DIRECTLY 
+        <BabySizeCard />
+        <UpcomingAppointment />
+        <PlansCardHomeScreen />
+        
+        <HelpfulTipsCard />
+        <MoodTracker />
+        <PregnancyTipCard />
+        <HelpfulTipsCard />
+        <HomeScreenSymptom />
+        <WeeklyFAQ />
+        <BumpCard />
+        <VideoCard />
+        <Testimonials />
+        <ShopLinks />
+        */}
+
+
+
+
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+    backgroundColor: "#ebf7f7ff",
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+  contentContainer: {
+    flexGrow: 1,
+    paddingHorizontal: 2,
+    paddingBottom: 100,
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+  heroContainer: {
+    alignItems: "center",
+    marginTop: 20,
+    marginBottom: 20,
   },
   title: {
-    textAlign: 'center',
+    fontSize: 32,
+    fontWeight: "700",
+    color: "#1f2937",
+    marginBottom: 8,
   },
-  code: {
-    textTransform: 'uppercase',
+  subtitle: {
+    fontSize: 16,
+    color: "#20094D",
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  actionsContainer: {
+    width: "100%",
+    gap: 16,
+    marginTop: 30,
+  },
+  actionButton: {
+    backgroundColor: "#20094D",
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  lastActionButton: {
+    marginBottom: 14,
+  },
+  actionButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
