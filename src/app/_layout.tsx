@@ -22,19 +22,19 @@ export default function RootLayout() {
 
 
         {/* Auth pages */}
-        {/* 
+        
         <Stack.Screen name="auth/signup" />
         <Stack.Screen name="auth/login" />
         <Stack.Screen name="auth/choose-date" />
         <Stack.Screen name="auth/choose-month" />
         <Stack.Screen name="auth/choose-year" />
-        */}
+       
 
 
         {/* Header */}
-        {/* 
+        
         <Stack.Screen name="header/index" />
-        */}
+        
 
 
 

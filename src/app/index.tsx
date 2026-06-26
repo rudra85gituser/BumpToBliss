@@ -54,12 +54,7 @@ export default function HomeScreen() {
 
     {/* ACTION BUTTONS */}
     {/*
-        <View style={styles.actionsContainer}>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => router.push("/auth/signup")}>
-            <Text style={styles.actionButtonText}>Sign Up</Text>
-          </TouchableOpacity>
+        
 
           <TouchableOpacity
             style={styles.actionButton}
@@ -82,7 +77,13 @@ export default function HomeScreen() {
         */}
 
 
-
+<View style={styles.actionsContainer}>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => router.push("/auth/signup")}>
+            <Text style={styles.actionButtonText}>Sign Up</Text>
+          </TouchableOpacity>
+</View>
   
 
        <GarbhaSanskarFeature />

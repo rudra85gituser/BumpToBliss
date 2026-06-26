@@ -1,17 +1,15 @@
 import { useRouter } from "expo-router";
 import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import FeatureCard from "../../../screens/mamasKitTools/FeatureCard";
-// Update the import path to match the actual location and casing of the tools file
-// Update the import path to match the actual location and casing of the tools file
 import { tools } from "../../../constants/tools";
+import FeatureCard from "../../../screens/mamasKitTools/FeatureCard";
 
 const features = [
   {
@@ -69,11 +67,11 @@ export default function MamasKitScreen() {
 
   const handleCardPress = (featureId: string) => {
     if (featureId === "due-date-calculator") {
-      router.push("/tools/due-date-calculator");
+      router.push("/mamasKitTools/due-date-calculator");
     } else if (featureId === "journal") {
-      router.push("/tools/journal");
+      router.push("/mamasKitTools/journal");
     } else {
-      router.push(`/tools/features/${featureId}`);
+      router.push(`/mamasKitTools/features/${featureId}`);
     }
   };
 
