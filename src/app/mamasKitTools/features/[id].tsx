@@ -3,8 +3,9 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 
-import DueDateCalculator from "../../../screens/mamasKitTools/DueDateCalculator";
-import Journal from "../../../screens/mamasKitTools/Journal";
+import DueDateCalculator from "../../../screens/mamasKitTools/dueDateCalculator/DueDateCalculator";
+import Journal from "../../../screens/mamasKitTools/jounral/Journal";
+import TravelChecklist from "../../../screens/mamasKitTools/travelCheckList/TravelChecklist";
 
 const featureDetails: Record<string, { title: string; description: string }> = {
   "due-date-calculator": {
@@ -20,6 +21,10 @@ const featureDetails: Record<string, { title: string; description: string }> = {
   "baby-kick-counter": {
     title: "Baby Kick Counter",
     description: "Monitor your baby's movements and track kick counts.",
+  },
+  "contraction-timer": {
+    title: "Contraction Timer",
+    description: "Track and time your contractions during labor.",
   },
   "food-tracking": {
     title: "Food Tracking",
@@ -37,6 +42,10 @@ const featureDetails: Record<string, { title: string; description: string }> = {
     title: "Baby Name List",
     description: "Create and manage your list of potential baby names.",
   },
+  "bumpy-gallery": {
+    title: "Bumpy Gallery",
+    description: "Capture and store your pregnancy journey photos.",
+  },
   "travel-checklist": {
     title: "Travel Checklist",
     description: "Prepare for travel with a comprehensive pregnancy checklist.",
@@ -53,6 +62,18 @@ export default function FeatureDetailScreen() {
         return <DueDateCalculator />;
       case "journal":
         return <Journal />;
+      case "baby-kick-counter":
+        return <BabyKickCounter />;
+      case "contraction-timer":
+        return <ContractionTimer />;
+      case "water-intake":
+        return <WaterInTake />;
+      case "baby-name-list":
+        return <BabyNameList />;
+      case "bumpy-gallery":
+        return <BumpyGallery />;
+      case "travel-checklist":
+        return <TravelChecklist />;
       default:
         return (
           <View style={styles.notFoundContainer}>
@@ -87,7 +108,7 @@ const styles = StyleSheet.create({
     color: "#6b7280",
   },
   backdrop: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContainer: {

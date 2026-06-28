@@ -1,8 +1,5 @@
-"use client";
-
-import React from 'react';
-import GarbhaSanskarCard from './GarbhaSanskarCard';
 import { PregnancyProvider } from '@/src/context/PregnancyContext';
+import GarbhaSanskarCard from './GarbhaSanskarCard';
 
 
 export default function GarbhaSanskarCardWrapper() {

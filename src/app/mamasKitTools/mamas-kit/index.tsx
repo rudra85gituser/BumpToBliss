@@ -13,21 +13,15 @@ import FeatureCard from "../../../screens/mamasKitTools/FeatureCard";
 
 const features = [
   {
-    id: "due-date-calculator",
-    title: "Due Date Calculator",
-    image: tools.dueDateCalculator,
+    id: "baby-kick-counter",
+    title: "Baby Kick Counter",
+    image: tools.babyKickCounter,
     badge: false,
   },
   {
     id: "journal",
     title: "Journal",
     image: tools.journal,
-    badge: false,
-  },
-  {
-    id: "baby-kick-counter",
-    title: "Baby Kick Counter",
-    image: tools.babyKickCounter,
     badge: false,
   },
   {
@@ -60,6 +54,12 @@ const features = [
     image: tools.travelChecklist,
     badge: true,
   },
+  {
+    id: "due-date-calculator",
+    title: "Due Date Calculator",
+    image: tools.dueDateCalculator,
+    badge: false,
+  },
 ];
 
 export default function MamasKitScreen() {
@@ -70,6 +70,16 @@ export default function MamasKitScreen() {
       router.push("/mamasKitTools/due-date-calculator");
     } else if (featureId === "journal") {
       router.push("/mamasKitTools/journal");
+    } else if (featureId === "baby-kick-counter") {
+      router.push("/mamasKitTools/baby-kick-counter");
+    } else if (featureId === "contraction-timer") {
+      router.push("/mamasKitTools/contraction-timer");
+    } else if (featureId === "water-intake") {
+      router.push("/mamasKitTools/water-intake");
+    } else if (featureId === "baby-name-list") {
+      router.push("/mamasKitTools/baby-name-list");
+    } else if (featureId === "bumpy-gallery") {
+      router.push("/mamasKitTools/bumpy-gallery");
     } else {
       router.push(`/mamasKitTools/features/${featureId}`);
     }

@@ -1,21 +1,19 @@
-"use client";
-
-import React, { useState, useMemo } from "react";
+import { router } from "expo-router";
+import React, { useMemo, useState } from "react";
 import {
-  FlatList,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ActivityIndicator,
+    ActivityIndicator,
+    FlatList,
+    Image,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { router } from "expo-router";
-import UserInputDate from "./userInputDate";
 import { usePregnancy } from "../../context/PregnancyContext";
 import { useGarbhaAllData } from "../../hooks/useGarbhaAllData";
+import UserInputDate from "./userInputDate";
 
 interface SectionWithSubsections {
   id: number;
