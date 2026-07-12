@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
+    Alert,
     ScrollView,
     StyleSheet,
     Text,
@@ -10,21 +11,42 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+import { useAuth } from "@/src/context/AuthContext";
 
 export default function Login() {
   const router = useRouter();
+  const { isAuthenticated, isLoading, login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleLogin = () => {
-    if (email && password) {
-      router.push("/");
+  const handleLogin = async () => {
+    if (!email.trim() || !password) {
+      Alert.alert("Missing details", "Enter your email and password.");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      await login(email, password);
+      router.replace("/(tabs)/home-wrapper");
+    } catch (error) {
+      Alert.alert("Login failed", error instanceof Error ? error.message : "Please try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace("/(tabs)/home-wrapper");
+    }
+  }, [isAuthenticated, isLoading, router]);
+
   return (
-    <SafeAreaProvider>
+    <SafeAreaView style={styles.safeArea}>
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -49,11 +71,12 @@ export default function Login() {
             <TextInput
               style={styles.input}
               placeholder="ex - abc@gmail.com"
-              placeholderTextColor="#999"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-            />
+            placeholderTextColor="#999"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
           </View>
 
           {/* Password Input */}
@@ -73,9 +96,12 @@ export default function Login() {
           <TouchableOpacity
             onPress={handleLogin}
             activeOpacity={0.8}
-            style={styles.primaryButton}
+            disabled={submitting}
+            style={[styles.primaryButton, submitting && styles.disabledButton]}
           >
-            <Text style={styles.primaryButtonText}>Log In</Text>
+            <Text style={styles.primaryButtonText}>
+              {submitting ? "Logging in..." : "Log In"}
+            </Text>
           </TouchableOpacity>
 
           {/* Signup Link */}
@@ -87,11 +113,15 @@ export default function Login() {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaProvider>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#f8fbfb",
+  },
   scrollContainer: {
     flexGrow: 1,
     justifyContent: "center",
@@ -161,6 +191,9 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     marginTop: 20,
     marginBottom: 20,
+  },
+  disabledButton: {
+    opacity: 0.65,
   },
   primaryButtonText: {
     color: "white",

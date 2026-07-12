@@ -37,13 +37,15 @@ export default function ContractionTimer() {
   const [entries, setEntries] = useState<ContractionEntry[]>(mockContractionData);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval> | undefined;
     if (isRunning) {
       interval = setInterval(() => {
         setTime((prev) => prev + 1);
       }, 1000);
     }
-    return () => clearInterval(interval);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [isRunning]);
 
   const formatTime = (seconds: number) => {

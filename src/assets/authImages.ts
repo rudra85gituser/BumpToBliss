@@ -1,5 +1,5 @@
-import google from "@/assets/auth/google.png";
-import apple from "@/assets/auth/apple.png";
+import google from "@/src/assets/auth/google.png";
+import apple from "@/src/assets/auth/apple.png";
 
 export const authImages = {
   google,

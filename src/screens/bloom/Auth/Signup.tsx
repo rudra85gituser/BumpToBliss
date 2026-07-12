@@ -13,7 +13,7 @@ import {
 import { useRouter } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { authImages } from "@/constants/authImages";
+import { authImages } from "@/src/constants/authImages";
 
 export default function SignUp() {
   const router = useRouter();

@@ -1,7 +1,10 @@
 "use client";
 
+import { useRouter } from "expo-router";
+import { ChevronLeft } from "lucide-react-native";
 import React, { useState } from "react";
 import {
+  Alert,
   Image,
   ImageSourcePropType,
   Pressable,
@@ -10,10 +13,10 @@ import {
   Text,
   View,
 } from "react-native";
-import { useRouter } from "expo-router";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { profile } from "@/src/constants/profile";
+import { useAuth } from "@/src/context/AuthContext";
 
 type MenuItem = {
   icon: ImageSourcePropType;
@@ -35,25 +38,26 @@ const MenuItemRow: React.FC<MenuItemRowProps> = ({ item, onPress }) => (
         {item.subtitle && <Text style={styles.menuItemSubtitle}>{item.subtitle}</Text>}
       </View>
     </View>
-    <Text style={styles.menuItemArrow}>â€º</Text>
+    <Text style={styles.menuItemArrow}>{">"}</Text>
   </Pressable>
 );
 
 export default function Profile() {
   const router = useRouter();
+  const { logout, user } = useAuth();
 
   const [babies] = useState([
     { id: "1", name: "Kiki", avatar: profile.kiki },
     { id: "2", name: "Ayu", avatar: profile.ayu },
   ]);
 
-  const quickActionsMenu = [
+  const quickActionsMenu: MenuItem[] = [
     { icon: profile.appointments, title: "Appointments", subtitle: "Upcoming Date 15.11.25" },
     { icon: profile.reports, title: "Reports", subtitle: "View latest updates" },
     { icon: profile.dietChart, title: "Diet Chart", subtitle: "Customized" },
   ];
 
-  const settingsMenu = [
+  const settingsMenu: MenuItem[] = [
     { icon: profile.notifications, title: "Notifications" },
     { icon: profile.faq, title: "FAQ" },
     { icon: profile.termConditions, title: "Terms & Condition" },
@@ -64,34 +68,52 @@ export default function Profile() {
     { icon: profile.logOut, title: "Log out" },
   ];
 
+  const openPlaceholder = (title: string) => {
+    router.push({
+      pathname: "/profile/placeholder",
+      params: { title },
+    });
+  };
+
+  const handleMenuPress = async (title: string) => {
+    if (title === "Log out") {
+      try {
+        await logout();
+        router.replace("/auth/login");
+      } catch (error) {
+        Alert.alert("Logout failed", error instanceof Error ? error.message : "Please try again.");
+      }
+      return;
+    }
+
+    openPlaceholder(title);
+  };
+
   return (
-    <SafeAreaProvider style={styles.provider}>
+    <SafeAreaView style={styles.provider}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Header */}
         <View style={styles.header}>
-          <Pressable onPress={() => router.back()}>
-            <Text style={styles.headerBack}>â€¹</Text>
+          <Pressable onPress={() => router.back()} style={styles.headerIconButton}>
+            <ChevronLeft size={22} color="#1f2937" />
           </Pressable>
           <Text style={styles.headerTitle}>Profile</Text>
           <View style={styles.headerSpacer} />
         </View>
 
-        {/* User Profile Card */}
         <View style={styles.profileCard}>
           <Image source={profile.profileImage} style={styles.profileImage} />
           <View style={styles.profileContent}>
             <Text style={styles.profileName}>Soma Trivedi</Text>
-            <Text style={styles.profileEmail}>soma34@gmail.com</Text>
+            <Text style={styles.profileEmail}>{user?.email ?? "No email available"}</Text>
           </View>
-          <Pressable style={styles.editButton}>
+          <Pressable style={styles.editButton} onPress={() => openPlaceholder("Edit Profile")}>
             <Image source={profile.edit} style={styles.editIcon} />
           </Pressable>
         </View>
 
-        {/* Babies Section */}
         <View style={styles.babiesSection}>
           <Text style={styles.babiesTitle}>Babies</Text>
           <View style={styles.babiesRow}>
@@ -101,33 +123,31 @@ export default function Profile() {
                 <Text style={styles.babyName}>{baby.name}</Text>
               </View>
             ))}
-            <Pressable style={styles.addBabyButton}>
+            <Pressable style={styles.addBabyButton} onPress={() => openPlaceholder("Add Baby")}>
               <Text style={styles.addBabyText}>+</Text>
             </Pressable>
           </View>
         </View>
 
-        {/* Quick Actions Card */}
         <View style={styles.menuCard}>
           {quickActionsMenu.map((item, index) => (
-            <View key={index}>
-              <MenuItemRow item={item} onPress={() => console.log(`Pressed ${item.title}`)} />
+            <View key={item.title}>
+              <MenuItemRow item={item} onPress={() => handleMenuPress(item.title)} />
               {index < quickActionsMenu.length - 1 && <View style={styles.separator} />}
             </View>
           ))}
         </View>
 
-        {/* Settings Card */}
         <View style={styles.menuCard}>
           {settingsMenu.map((item, index) => (
-            <View key={index}>
-              <MenuItemRow item={item} onPress={() => console.log(`Pressed ${item.title}`)} />
+            <View key={item.title}>
+              <MenuItemRow item={item} onPress={() => handleMenuPress(item.title)} />
               {index < settingsMenu.length - 1 && <View style={styles.separator} />}
             </View>
           ))}
         </View>
       </ScrollView>
-    </SafeAreaProvider>
+    </SafeAreaView>
   );
 }
 
@@ -135,23 +155,23 @@ const styles = StyleSheet.create({
   provider: {
     flex: 1,
     backgroundColor: "#f5f5f7",
-    paddingBottom: 100,
   },
   scrollContent: {
-    paddingBottom: 20,
+    paddingBottom: 120,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingVertical: 30,
+    paddingVertical: 12,
     backgroundColor: "#ffffff",
   },
-  headerBack: {
-    fontSize: 24,
-    color: "#1f2937",
-    fontWeight: "600",
+  headerIconButton: {
+    width: 36,
+    height: 36,
+    alignItems: "center",
+    justifyContent: "center",
   },
   headerTitle: {
     fontSize: 18,
@@ -159,7 +179,7 @@ const styles = StyleSheet.create({
     color: "#1f2937",
   },
   headerSpacer: {
-    width: 24,
+    width: 36,
   },
   profileCard: {
     flexDirection: "row",

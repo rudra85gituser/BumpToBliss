@@ -87,6 +87,7 @@ DerivedData/
 !.yarn/versions
 
 # Local env files
+.env
 .env*.local
 
 # TypeScript

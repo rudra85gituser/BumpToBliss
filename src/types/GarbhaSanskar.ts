@@ -24,6 +24,7 @@ export type GarbhaSection = {
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
+  garbha_sanskar_subsections?: Pick<GarbhaSubsection, 'id' | 'title'>[];
 };
 
 export type GarbhaSubsection = {
@@ -55,8 +56,11 @@ export type GarbhaContent = {
   description: string | null;
   content: string;
   duration: number | null;
+  durationMinutes?: number | null;
   category: 'All' | 'Emotional' | 'Physical' | 'Spiritual';
   contentType: 'video' | 'article' | 'activity' | 'affirmation';
+  contentsType?: 'video' | 'article' | 'activity' | 'affirmation';
+  shortDescription?: string | null;
   pregnancy_stage: PregnancyStage;
   garbha_sanskar_section: GarbhaSection;
   garbha_sanskar_subsection: GarbhaSubsection;

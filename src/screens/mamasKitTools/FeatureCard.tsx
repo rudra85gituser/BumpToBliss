@@ -2,7 +2,6 @@
 
 import React from "react";
 import { StyleSheet, TouchableOpacity, ImageBackground, ImageSourcePropType, View } from "react-native";
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 interface FeatureCardProps {
   image: ImageSourcePropType;
@@ -11,13 +10,11 @@ interface FeatureCardProps {
 
 export default function FeatureCard({ image, onPress }: FeatureCardProps) {
   return (
-    <SafeAreaProvider>
     <TouchableOpacity style={styles.cardContainer} onPress={onPress} activeOpacity={0.85}>
       <ImageBackground source={image} style={styles.imageBackground} imageStyle={styles.imageStyle}>
         <View style={styles.overlay} />
       </ImageBackground>
     </TouchableOpacity>
-    </SafeAreaProvider>
   );
 }
 
@@ -37,7 +34,7 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: "rgba(34, 33, 33, 0.1)",
   },
 });

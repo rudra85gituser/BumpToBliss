@@ -8,9 +8,9 @@ import {
   Text,
   Platform,
   Modal,
-  SafeAreaView,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type UserInputDateProps = {
   onDateSelected: (date: Date, day: number, week: number) => void;

@@ -36,7 +36,8 @@
         }
       ],
       "@react-native-community/datetimepicker",
-      "react-native-video"
+      "react-native-video",
+      "expo-image"
     ],
     "experiments": {
       "typedRoutes": true,

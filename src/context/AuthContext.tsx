@@ -1,46 +1,96 @@
-import React, { createContext, useContext, useState } from 'react';
+import type { Session, User } from "@supabase/supabase-js";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+
+import {
+  missingSupabaseConfigMessage,
+  supabase,
+} from "@/src/services/supabase";
 
 type AuthContextType = {
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => void;
-  logout: () => void;
-  signup: (email: string, password: string) => void;
+  session: Session | null;
+  user: User | null;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  signup: (email: string, password: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const login = (email: string, password: string) => {
-    // Simple auth state - no local storage
-    // Will be replaced with Supabase later
-    if (email && password) {
-      setIsAuthenticated(true);
+  useEffect(() => {
+    if (!supabase) {
+      setIsLoading(false);
+      return;
     }
-  };
 
-  const signup = (email: string, password: string) => {
-    // Simple auth state - no local storage
-    // Will be replaced with Supabase later
-    if (email && password) {
-      setIsAuthenticated(true);
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setIsLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setSession(nextSession);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const login = async (email: string, password: string) => {
+    if (!supabase) {
+      throw new Error(missingSupabaseConfigMessage);
     }
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+
+    if (error) throw error;
   };
 
-  const logout = () => {
-    setIsAuthenticated(false);
+  const signup = async (email: string, password: string) => {
+    if (!supabase) {
+      throw new Error(missingSupabaseConfigMessage);
+    }
+
+    const { error } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+    });
+
+    if (error) throw error;
   };
 
-  const value: AuthContextType = {
-    isAuthenticated,
-    isLoading,
-    login,
-    logout,
-    signup,
+  const logout = async () => {
+    if (!supabase) {
+      setSession(null);
+      return;
+    }
+
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+    setSession(null);
   };
+
+  const value = useMemo<AuthContextType>(
+    () => ({
+      isAuthenticated: Boolean(session?.user),
+      isLoading,
+      session,
+      user: session?.user ?? null,
+      login,
+      logout,
+      signup,
+    }),
+    [isLoading, session]
+  );
 
   return (
     <AuthContext.Provider value={value}>
@@ -52,14 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    // Return default values instead of throwing error
-    return {
-      isAuthenticated: false,
-      isLoading: false,
-      login: () => {},
-      logout: () => {},
-      signup: () => {},
-    };
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 };

@@ -41,7 +41,7 @@ export default function Journal() {
         <Text style={styles.headerTitle}>Journal</Text>
 
         <TouchableOpacity
-          onPress={() => router.push("/tools/journal/new-entry")}
+          onPress={() => router.push("/mamasKitTools/journal/new-entry")}
           style={styles.newEntryButton}
         >
           <Text style={styles.newEntryButtonText}>New Entry</Text>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import {
+  Alert,
   Image,
   ScrollView,
   StyleSheet,
@@ -11,23 +12,37 @@ import {
   View,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { authImages } from "../../constants/authImages";
+import { useAuth } from "@/src/context/AuthContext";
 
 export default function SignUp() {
   const router = useRouter();
+  const { signup } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSignUp = () => {
-    if (email && password) {
+  const handleSignUp = async () => {
+    if (!email.trim() || !password) {
+      Alert.alert("Missing details", "Enter your email and password.");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      await signup(email, password);
       router.push("/auth/choose-date");
+    } catch (error) {
+      Alert.alert("Sign up failed", error instanceof Error ? error.message : "Please try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
-    <SafeAreaProvider>
+    <SafeAreaView style={styles.safeArea}>
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -56,6 +71,7 @@ export default function SignUp() {
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
+              autoCapitalize="none"
             />
           </View>
 
@@ -76,9 +92,12 @@ export default function SignUp() {
           <TouchableOpacity
             style={styles.primaryButton}
             onPress={handleSignUp}
+            disabled={submitting}
             activeOpacity={0.8}
           >
-            <Text style={styles.primaryButtonText}>Sign Up</Text>
+            <Text style={styles.primaryButtonText}>
+              {submitting ? "Signing up..." : "Sign Up"}
+            </Text>
           </TouchableOpacity>
 
           {/* Social Login */}
@@ -111,11 +130,15 @@ export default function SignUp() {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaProvider>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#f8fbfb",
+  },
   scrollContainer: {
     flexGrow: 1,
     justifyContent: "center",
