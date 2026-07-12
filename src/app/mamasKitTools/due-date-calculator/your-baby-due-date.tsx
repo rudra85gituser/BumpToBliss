@@ -1,3 +1,3 @@
-import YourBabyDueDate from "../../../screens/mamasKitTools/YourBabyDueDate";
+import YourBabyDueDate from "../../../screens/mamasKitTools/dueDateCalculator/YourBabyDueDate";
 
 export default YourBabyDueDate;

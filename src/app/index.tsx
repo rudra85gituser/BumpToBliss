@@ -28,17 +28,19 @@ import VideoCard from "@/app/videoCard";
 import WeeklyFAQ from "@/app/weeklyFAQ";
 */
 import GarbhaSanskarFeature from "@/src/app/garbhaSanskar";
+import AuthGuard from "@/src/components/AuthGuard";
 
 
 export default function HomeScreen() {
   const router = useRouter();
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView
-        contentContainerStyle={styles.contentContainer}
-        showsVerticalScrollIndicator={false}
-      >
+    <AuthGuard>
+      <SafeAreaView style={styles.container}>
+        <ScrollView
+          contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
+        >
         {/* Header
         <Header />
          */}
@@ -54,12 +56,7 @@ export default function HomeScreen() {
 
     {/* ACTION BUTTONS */}
     {/*
-        <View style={styles.actionsContainer}>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => router.push("/auth/signup")}>
-            <Text style={styles.actionButtonText}>Sign Up</Text>
-          </TouchableOpacity>
+        
 
           <TouchableOpacity
             style={styles.actionButton}
@@ -82,7 +79,13 @@ export default function HomeScreen() {
         */}
 
 
-
+<View style={styles.actionsContainer}>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => router.push("/auth/signup")}>
+            <Text style={styles.actionButtonText}>Sign Up</Text>
+          </TouchableOpacity>
+</View>
   
 
        <GarbhaSanskarFeature />
@@ -107,8 +110,9 @@ export default function HomeScreen() {
 
 
 
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      </SafeAreaView>
+    </AuthGuard>
   );
 }
 

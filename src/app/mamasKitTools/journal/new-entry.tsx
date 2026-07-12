@@ -1,3 +1,3 @@
-import JournalNewEntry from "../../../screens/mamasKitTools/JournalNewEntry";
+import JournalNewEntry from "../../../screens/mamasKitTools/jounral/JournalNewEntry";
 
 export default JournalNewEntry;

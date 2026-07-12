@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import {
   Platform,
   ScrollView,
@@ -58,7 +58,7 @@ export default function DueDateCalculator() {
     });
 
     router.push({
-      pathname: "/tools/due-date-calculator/your-baby-due-date",
+      pathname: "/mamasKitTools/due-date-calculator/your-baby-due-date",
       params: {
         date: formattedDate,
         weeks: weeksPregnant.toString(),
