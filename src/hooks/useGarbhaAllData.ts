@@ -81,6 +81,8 @@ export const useGarbhaAllData = (
   );
 
   const fetchAllData = useCallback(async () => {
+    await Promise.resolve();
+
     if (pregnancyDay === null || pregnancyWeek === null) {
       setState((s) => ({
         ...s,
@@ -136,7 +138,11 @@ export const useGarbhaAllData = (
 
   useEffect(() => {
     if (pregnancyDay !== null && pregnancyWeek !== null) {
-      fetchAllData();
+      const timeout = setTimeout(() => {
+        fetchAllData();
+      }, 0);
+
+      return () => clearTimeout(timeout);
     }
   }, [pregnancyDay, pregnancyWeek, fetchAllData]);
 

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { GarbhaContent, GroupedContent, GarbhaSection } from '../types/GarbhaSanskar';
+import { GarbhaContent, GroupedContent } from '../types/GarbhaSanskar';
 
 export const usePregnancyCalculation = (startDate: Date | null) => {
   return useMemo(() => {

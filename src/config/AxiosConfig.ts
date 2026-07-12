@@ -1,9 +1,10 @@
-import axios, { AxiosInstance } from 'axios';
+import { create } from 'axios';
+import type { AxiosInstance } from 'axios';
 import { Credentials } from './Credentials';
 
 const BASE_URL = 'https://bumptobliss-cms-dq9c8.ondigitalocean.app/api';
 
-const axiosInstance: AxiosInstance = axios.create({
+const axiosInstance: AxiosInstance = create({
   baseURL: BASE_URL,
   timeout: 10000,
   headers: {

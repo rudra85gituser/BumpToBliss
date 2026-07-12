@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
@@ -79,7 +79,7 @@ export default function BabyKickCounter() {
         <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
           <View style={styles.card}>
             <Text style={styles.infoText}>
-              After your third trimester begin, you will need to record your baby kick counts to learn about your baby's movement & patterns
+              {"After your third trimester begin, you will need to record your baby kick counts to learn about your baby's movement & patterns"}
             </Text>
 
             <View style={styles.inputGroup}>

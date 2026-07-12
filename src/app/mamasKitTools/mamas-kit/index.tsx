@@ -95,7 +95,7 @@ export default function MamasKitScreen() {
         <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
           <Text style={styles.backButtonText}>{"<"}</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Mama's Kit</Text>
+        <Text style={styles.headerTitle}>{"Mama's Kit"}</Text>
         <View style={styles.headerSpacer} />
       </View>
 

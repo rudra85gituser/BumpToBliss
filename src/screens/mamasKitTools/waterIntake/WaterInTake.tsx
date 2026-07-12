@@ -1,4 +1,4 @@
-﻿import { ChevronLeft, Edit2, MoreVertical, Trash2 } from 'lucide-react-native'
+import { ChevronLeft, Edit2, MoreVertical, Trash2 } from 'lucide-react-native'
 import { useState } from 'react'
 import { Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -27,6 +27,107 @@ const drinkIcons: Record<string, string> = {
   Juice: '🧃',
   Chai: '🍵',
 }
+
+type NewEntryModalProps = {
+  amount: string
+  date: string
+  drinkType: string
+  onAmountChange: (amount: string) => void
+  onClose: () => void
+  onDateChange: (date: string) => void
+  onDrinkTypeChange: (drinkType: string) => void
+  onSave: () => void
+  onTimeChange: (time: string) => void
+  showNewEntry: boolean
+  time: string
+}
+
+const NewEntryModal = ({
+  amount,
+  date,
+  drinkType,
+  onAmountChange,
+  onClose,
+  onDateChange,
+  onDrinkTypeChange,
+  onSave,
+  onTimeChange,
+  showNewEntry,
+  time,
+}: NewEntryModalProps) => (
+  <Modal visible={showNewEntry} animationType="slide">
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={onClose} style={styles.backButton}>
+            <ChevronLeft size={24} color="#000" />
+            <Text style={styles.backButtonText}>Water In-take</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.infoText}>
+            Choose how much water you took every hour of the day
+          </Text>
+
+          <View style={styles.field}>
+            <Text style={styles.label}>Drink</Text>
+            <View style={styles.drinkButtons}>
+              {drinkTypes.map((type) => (
+                <TouchableOpacity
+                  key={type}
+                  onPress={() => onDrinkTypeChange(type)}
+                  style={[
+                    styles.drinkButton,
+                    drinkType === type && styles.drinkButtonActive,
+                  ]}
+                >
+                  <Text style={styles.drinkIcon}>{drinkIcons[type]}</Text>
+                  <Text
+                    style={[
+                      styles.drinkButtonText,
+                      drinkType === type && styles.drinkButtonTextActive,
+                    ]}
+                  >
+                    {type}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.field}>
+            <Text style={styles.label}>How much</Text>
+            <TextInput
+              value={amount}
+              onChangeText={onAmountChange}
+              placeholder="300 ml"
+              style={styles.input}
+            />
+          </View>
+
+          <View style={styles.field}>
+            <Text style={styles.label}>Date & Time</Text>
+            <TextInput
+              value={`${date}  ${time}`}
+              onChangeText={(text) => {
+                const parts = text.split('  ')
+                onDateChange(parts[0] || date)
+                onTimeChange(parts[1] || time)
+              }}
+              placeholder="20 Nov, 25  2:48 PM"
+              style={styles.input}
+            />
+          </View>
+
+          <TouchableOpacity onPress={onSave} style={styles.saveButton}>
+            <Text style={styles.saveButtonText}>Save</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  </Modal>
+)
 
 export default function WaterIntake() {
   const [showNewEntry, setShowNewEntry] = useState(false)
@@ -57,88 +158,22 @@ export default function WaterIntake() {
     setOpenMenu(null)
   }
 
-  const NewEntryModal = () => (
-    <Modal visible={showNewEntry} animationType="slide">
-      <SafeAreaView style={styles.safeArea}>
-        <ScrollView style={styles.container}>
-          <View style={styles.header}>
-            <TouchableOpacity
-              onPress={() => setShowNewEntry(false)}
-              style={styles.backButton}
-            >
-              <ChevronLeft size={24} color="#000" />
-              <Text style={styles.backButtonText}>Water In-take</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.card}>
-            <Text style={styles.infoText}>
-              Choose how much water you took every hour of the day
-            </Text>
-
-            <View style={styles.field}>
-              <Text style={styles.label}>Drink</Text>
-              <View style={styles.drinkButtons}>
-                {drinkTypes.map((type) => (
-                  <TouchableOpacity
-                    key={type}
-                    onPress={() => setDrinkType(type)}
-                    style={[
-                      styles.drinkButton,
-                      drinkType === type && styles.drinkButtonActive,
-                    ]}
-                  >
-                    <Text style={styles.drinkIcon}>{drinkIcons[type]}</Text>
-                    <Text
-                      style={[
-                        styles.drinkButtonText,
-                        drinkType === type && styles.drinkButtonTextActive,
-                      ]}
-                    >
-                      {type}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-
-            <View style={styles.field}>
-              <Text style={styles.label}>How much</Text>
-              <TextInput
-                value={amount}
-                onChangeText={setAmount}
-                placeholder="300 ml"
-                style={styles.input}
-              />
-            </View>
-
-            <View style={styles.field}>
-              <Text style={styles.label}>Date & Time</Text>
-              <TextInput
-                value={`${date}  ${time}`}
-                onChangeText={(text) => {
-                  const parts = text.split('  ')
-                  setDate(parts[0] || date)
-                  setTime(parts[1] || time)
-                }}
-                placeholder="20 Nov, 25  2:48 PM"
-                style={styles.input}
-              />
-            </View>
-
-            <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
-              <Text style={styles.saveButtonText}>Save</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </Modal>
-  )
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>
-        <NewEntryModal />
+        <NewEntryModal
+          amount={amount}
+          date={date}
+          drinkType={drinkType}
+          onAmountChange={setAmount}
+          onClose={() => setShowNewEntry(false)}
+          onDateChange={setDate}
+          onDrinkTypeChange={setDrinkType}
+          onSave={handleSave}
+          onTimeChange={setTime}
+          showNewEntry={showNewEntry}
+          time={time}
+        />
 
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton}>
@@ -442,5 +477,4 @@ const styles = StyleSheet.create({
     color: '#ef4444',
   },
 })
-
 

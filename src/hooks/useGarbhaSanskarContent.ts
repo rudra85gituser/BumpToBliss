@@ -16,6 +16,8 @@ export const useGarbhaSanskarContent = (pregnancyDay: number | null) => {
   });
 
   const fetchContent = useCallback(async () => {
+    await Promise.resolve();
+
     if (pregnancyDay === null || pregnancyDay < 1 || pregnancyDay > 280) {
       setState({ loading: false, error: 'Invalid pregnancy day', data: null });
       return;
@@ -50,7 +52,11 @@ export const useGarbhaSanskarContent = (pregnancyDay: number | null) => {
 
   useEffect(() => {
     if (pregnancyDay !== null) {
-      fetchContent();
+      const timeout = setTimeout(() => {
+        fetchContent();
+      }, 0);
+
+      return () => clearTimeout(timeout);
     }
   }, [pregnancyDay, fetchContent]);
 

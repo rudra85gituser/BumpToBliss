@@ -35,7 +35,7 @@ export default function OnboardingDate() {
       >
         <View style={styles.card}>
           {/* Heading */}
-          <Text style={styles.heading}>Let's Make this more personalized</Text>
+          <Text style={styles.heading}>{"Let's Make this more personalized"}</Text>
           <Text style={styles.subHeading}>Select the day of conceive</Text>
 
           {/* Calendar Header */}
