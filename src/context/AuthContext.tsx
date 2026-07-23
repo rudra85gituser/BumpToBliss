@@ -5,6 +5,7 @@ import {
   missingSupabaseConfigMessage,
   supabase,
 } from "@/src/services/supabase";
+import { upsertUserProfile } from "@/src/services/userDataService";
 
 type AuthContextType = {
   isAuthenticated: boolean;
@@ -59,12 +60,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error(missingSupabaseConfigMessage);
     }
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
       password,
     });
 
     if (error) throw error;
+
+    if (data.user) {
+      await upsertUserProfile(data.user.id, {
+        email: data.user.email,
+      });
+    }
   };
 
   const logout = async () => {

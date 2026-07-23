@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -10,25 +10,44 @@ import {
   View,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+import { useAuth } from "@/src/context/AuthContext";
+import { getUserProfile, upsertUserProfile } from "@/src/services/userDataService";
 
 const WEEK_DAYS = ["S", "M", "T", "W", "T", "F", "S"];
 
 export default function OnboardingDate() {
   const router = useRouter();
+  const { user } = useAuth();
   const [selectedDate, setSelectedDate] = useState(16);
   const [babyName, setBabyName] = useState("");
 
   const days = Array.from({ length: 31 }, (_, index) => index + 1);
 
-  const handleNext = () => {
-    if (babyName) {
-      router.push("/auth/choose-month");
+  useEffect(() => {
+    if (!user) return;
+
+    getUserProfile(user.id).then((profile) => {
+      if (!profile) return;
+      if (profile.baby_name) setBabyName(profile.baby_name);
+      if (profile.conception_day) setSelectedDate(profile.conception_day);
+    });
+  }, [user]);
+
+  const handleNext = async () => {
+    if (babyName && user) {
+      await upsertUserProfile(user.id, {
+        email: user.email,
+        baby_name: babyName.trim(),
+        conception_day: selectedDate,
+      });
+      router.replace("/auth/choose-month");
     }
   };
 
   return (
-    <SafeAreaProvider>
+    <SafeAreaView style={styles.safeArea}>
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -96,11 +115,15 @@ export default function OnboardingDate() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaProvider>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#f8fbfb",
+  },
   scrollContainer: {
     flexGrow: 1,
     justifyContent: "center",

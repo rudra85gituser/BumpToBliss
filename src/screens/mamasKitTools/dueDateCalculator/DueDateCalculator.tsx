@@ -11,12 +11,16 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+import { useAuth } from "@/src/context/AuthContext";
+import { upsertUserProfile } from "@/src/services/userDataService";
 
 const METHODS = ["Last Period", "Conception Date", "Ultrasound Date"];
 
 export default function DueDateCalculator() {
   const router = useRouter();
+  const { user } = useAuth();
   const [method, setMethod] = useState("Last Period");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [cycleLength, setCycleLength] = useState("28");
@@ -28,7 +32,7 @@ export default function DueDateCalculator() {
     (21 + index).toString(),
   );
 
-  const handleCalculate = () => {
+  const handleCalculate = async () => {
     if (!selectedDate) {
       alert("Please select a date");
       return;
@@ -57,6 +61,18 @@ export default function DueDateCalculator() {
       day: "numeric",
     });
 
+    if (user) {
+      await upsertUserProfile(user.id, {
+        email: user.email,
+        conception_date: baseDate.toISOString(),
+        conception_day: baseDate.getDate(),
+        conception_month: baseDate.getMonth(),
+        conception_year: baseDate.getFullYear(),
+        due_date: dueDate.toISOString(),
+        pregnancy_weeks: weeksPregnant,
+      });
+    }
+
     router.push({
       pathname: "/mamasKitTools/due-date-calculator/your-baby-due-date",
       params: {
@@ -67,7 +83,7 @@ export default function DueDateCalculator() {
   };
 
   return (
-    <SafeAreaProvider style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
@@ -197,7 +213,7 @@ export default function DueDateCalculator() {
           <Text style={styles.calculateButtonText}>Calculate</Text>
         </TouchableOpacity>
       </ScrollView>
-    </SafeAreaProvider>
+    </SafeAreaView>
   );
 }
 

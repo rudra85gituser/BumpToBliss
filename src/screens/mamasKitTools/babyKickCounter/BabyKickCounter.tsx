@@ -2,7 +2,7 @@
 
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Platform,
     ScrollView,
@@ -12,47 +12,51 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+import { useAuth } from "@/src/context/AuthContext";
+import { addUserRecord, getUserCollection } from "@/src/services/userDataService";
 
 interface KickEntry {
   id: string;
   kicks: number;
   duration: string;
   dateTime: string;
+  created_at?: string;
 }
-
-const mockKickData: KickEntry[] = [
-  { id: "1", kicks: 6, duration: "1 min", dateTime: "20 Nov 2025  4:05PM" },
-  { id: "2", kicks: 6, duration: "1 min", dateTime: "20 Nov 2025  4:05PM" },
-  { id: "3", kicks: 6, duration: "1 min", dateTime: "20 Nov 2025  4:05PM" },
-  { id: "4", kicks: 6, duration: "1 min", dateTime: "20 Nov 2025  4:05PM" },
-  { id: "5", kicks: 6, duration: "1 min", dateTime: "20 Nov 2025  4:05PM" },
-  { id: "6", kicks: 6, duration: "1 min", dateTime: "20 Nov 2025  4:05PM" },
-  { id: "7", kicks: 8, duration: "1 min", dateTime: "20 Nov 2025  4:05PM" },
-  { id: "8", kicks: 6, duration: "1 min", dateTime: "20 Nov 2025  4:05PM" },
-  { id: "9", kicks: 6, duration: "1 min", dateTime: "20 Nov 2025  4:05PM" },
-  { id: "10", kicks: 6, duration: "1 min", dateTime: "20 Nov 2025  4:05PM" },
-];
 
 export default function BabyKickCounter() {
   const router = useRouter();
+  const { user } = useAuth();
   const [showNewEntry, setShowNewEntry] = useState(false);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);
   const [date, setDate] = useState("20 Nov, 25");
   const [notes, setNotes] = useState("");
-  const [entries, setEntries] = useState<KickEntry[]>(mockKickData);
+  const [entries, setEntries] = useState<KickEntry[]>([]);
   const [showStartTimePicker, setShowStartTimePicker] = useState(false);
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
 
-  const handleSave = () => {
+  useEffect(() => {
+    if (!user) return;
+
+    getUserCollection<KickEntry>(user.id, "kick_entries").then(setEntries);
+  }, [user]);
+
+  const handleSave = async () => {
+    if (!user) return;
+
+    const now = new Date();
+    const kicks = Number.parseInt(notes, 10);
     const newEntry: KickEntry = {
       id: Date.now().toString(),
-      kicks: 6,
+      kicks: Number.isNaN(kicks) ? 0 : kicks,
       duration: "1 min",
       dateTime: `${date}  ${endTime ? endTime.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : ""}`,
+      created_at: now.toISOString(),
     };
-    setEntries([newEntry, ...entries]);
+    const nextEntries = await addUserRecord(user.id, "kick_entries", newEntry);
+    setEntries(nextEntries);
     setShowNewEntry(false);
     setStartTime(null);
     setEndTime(null);
@@ -67,7 +71,7 @@ export default function BabyKickCounter() {
 
   if (showNewEntry) {
     return (
-      <SafeAreaProvider style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => setShowNewEntry(false)} style={styles.backButton}>
             <Text style={styles.backButtonText}>{"<"}</Text>
@@ -161,12 +165,12 @@ export default function BabyKickCounter() {
             </TouchableOpacity>
           </View>
         </ScrollView>
-      </SafeAreaProvider>
+      </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaProvider style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Text style={styles.backButtonText}>{"<"}</Text>
@@ -196,7 +200,7 @@ export default function BabyKickCounter() {
           ))}
         </View>
       </ScrollView>
-    </SafeAreaProvider>
+    </SafeAreaView>
   );
 }
 
