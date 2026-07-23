@@ -46,7 +46,7 @@ export default function OnboardingMonth() {
       >
         <View style={styles.card}>
           {/* Heading */}
-          <Text style={styles.heading}>Let's Make this more personalized</Text>
+          <Text style={styles.heading}>{"Let's Make this more personalized"}</Text>
           <Text style={styles.subHeading}>Select the month of conceive</Text>
 
           {/* Month Grid */}

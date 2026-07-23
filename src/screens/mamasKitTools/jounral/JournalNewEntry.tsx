@@ -1,42 +1,52 @@
 "use client";
 
-import { useState } from "react";
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useRouter } from "expo-router";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { useState } from "react";
+import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+import { useAuth } from "@/src/context/AuthContext";
+import { addUserRecord } from "@/src/services/userDataService";
+
+const moodOptions = ["Calm", "Happy", "Sad", "Anxious", "Angry", "Worried", "Meh"];
 
 export default function JournalNewEntry() {
   const router = useRouter();
+  const { user } = useAuth();
   const [newEntry, setNewEntry] = useState({
     title: "",
-    date: "",
+    date: new Date().toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    }),
     mood: "",
     notes: "",
-    image: "",
   });
 
-  const moodOptions = [
-    { label: "Calm", emoji: "ðŸ˜Œ" },
-    { label: "Happy", emoji: "ðŸ˜Š" },
-    { label: "Sad", emoji: "ðŸ˜¢" },
-    { label: "Anxious", emoji: "ðŸ˜°" },
-    { label: "Angry", emoji: "ðŸ˜¡" },
-    { label: "Worried", emoji: "ðŸ˜Ÿ" },
-    { label: "Meh", emoji: "ðŸ˜‘" },
-    { label: "Custom", emoji: "âž•" },
-  ];
-
-  const handleSaveEntry = () => {
-    if (!newEntry.title || !newEntry.date || !newEntry.mood) {
-      alert("Please fill all required fields");
+  const handleSaveEntry = async () => {
+    if (!newEntry.title.trim() || !newEntry.date.trim() || !newEntry.mood) {
+      Alert.alert("Missing details", "Please fill all required fields.");
       return;
     }
+
+    if (!user) return;
+
+    await addUserRecord(user.id, "journal_entries", {
+      id: Date.now().toString(),
+      title: newEntry.title.trim(),
+      date: newEntry.date.trim(),
+      mood: newEntry.mood,
+      notes: newEntry.notes.trim(),
+      created_at: new Date().toISOString(),
+    });
+
     router.back();
   };
 
   return (
-    <SafeAreaProvider style={styles.provider}>
-      {/* Header */}
+    <SafeAreaView style={styles.provider}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Text style={styles.backButtonText}>{"<"}</Text>
@@ -45,12 +55,10 @@ export default function JournalNewEntry() {
         <View style={styles.headerSpacer} />
       </View>
 
-      {/* Form */}
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Title */}
         <View style={styles.fieldGroup}>
           <Text style={styles.fieldLabel}>Title</Text>
           <TextInput
@@ -61,38 +69,34 @@ export default function JournalNewEntry() {
           />
         </View>
 
-        {/* Date */}
         <View style={styles.fieldGroup}>
           <Text style={styles.fieldLabel}>Date</Text>
           <TextInput
             style={styles.fieldInput}
-            placeholder="2 November, 2025"
+            placeholder="Monday, Nov 2, 2025"
             value={newEntry.date}
             onChangeText={(text) => setNewEntry({ ...newEntry, date: text })}
           />
         </View>
 
-        {/* Mood */}
         <View style={styles.fieldGroup}>
           <Text style={styles.fieldLabel}>Mood</Text>
           <View style={styles.moodGrid}>
-            {moodOptions.map((mood, index) => (
+            {moodOptions.map((mood) => (
               <TouchableOpacity
-                key={index}
+                key={mood}
                 style={[
                   styles.moodButton,
-                  newEntry.mood === mood.emoji && styles.moodButtonActive,
+                  newEntry.mood === mood && styles.moodButtonActive,
                 ]}
-                onPress={() => setNewEntry({ ...newEntry, mood: mood.emoji })}
+                onPress={() => setNewEntry({ ...newEntry, mood })}
               >
-                <Text style={styles.moodEmoji}>{mood.emoji}</Text>
-                <Text style={styles.moodLabel}>{mood.label}</Text>
+                <Text style={styles.moodLabel}>{mood}</Text>
               </TouchableOpacity>
             ))}
           </View>
         </View>
 
-        {/* Notes */}
         <View style={styles.fieldGroup}>
           <Text style={styles.fieldLabel}>Notes</Text>
           <TextInput
@@ -104,12 +108,11 @@ export default function JournalNewEntry() {
           />
         </View>
 
-        {/* Save Button */}
         <TouchableOpacity style={styles.saveButton} onPress={handleSaveEntry}>
           <Text style={styles.saveButtonText}>Save</Text>
         </TouchableOpacity>
       </ScrollView>
-    </SafeAreaProvider>
+    </SafeAreaView>
   );
 }
 
@@ -172,7 +175,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   moodButton: {
-    width: "22%",
+    width: "31%",
     alignItems: "center",
     paddingVertical: 12,
     borderRadius: 8,
@@ -182,13 +185,9 @@ const styles = StyleSheet.create({
   moodButtonActive: {
     backgroundColor: "#D1E7DD",
   },
-  moodEmoji: {
-    fontSize: 24,
-    marginBottom: 4,
-  },
   moodLabel: {
-    fontSize: 11,
-    color: "#6b7280",
+    fontSize: 12,
+    color: "#374151",
     textAlign: "center",
   },
   notesInput: {

@@ -33,7 +33,7 @@ export default function SignUp() {
     try {
       setSubmitting(true);
       await signup(email, password);
-      router.push("/auth/choose-date");
+      router.replace("/auth/choose-date");
     } catch (error) {
       Alert.alert("Sign up failed", error instanceof Error ? error.message : "Please try again.");
     } finally {

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";

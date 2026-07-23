@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useRouter } from "expo-router";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { useEffect, useState } from "react";
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { journal } from "@/src/constants/journal";
+import { useAuth } from "@/src/context/AuthContext";
+import { getUserCollection } from "@/src/services/userDataService";
 
 type JournalEntry = {
   id: string;
@@ -14,25 +15,22 @@ type JournalEntry = {
   mood: string;
   image?: any;
   notes: string;
+  created_at?: string;
 };
 
 export default function Journal() {
   const router = useRouter();
-  const [entries] = useState<JournalEntry[]>([
-    {
-      id: "1",
-      date: "Monday, 2 Nov, 2025",
-      title: "Peaceful day with baby",
-      mood: "ðŸ˜Š",
-      image: journal.journalImage,
-      notes:
-        "As an AI, I don't have real-time access to IMDb's rankings, and my training only goes up until September 2021. However, I can provide:",
-    },
-  ]);
+  const { user } = useAuth();
+  const [entries, setEntries] = useState<JournalEntry[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    getUserCollection<JournalEntry>(user.id, "journal_entries").then(setEntries);
+  }, [user]);
 
   return (
-    <SafeAreaProvider style={styles.provider}>
-      {/* Header */}
+    <SafeAreaView style={styles.provider}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Text style={styles.backButtonText}>{"<"}</Text>
@@ -48,38 +46,37 @@ export default function Journal() {
         </TouchableOpacity>
       </View>
 
-      {/* Journal Entries */}
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
       >
+        {entries.length === 0 && (
+          <Text style={styles.emptyText}>No journal entries yet.</Text>
+        )}
+
         {entries.map((entry) => (
           <View key={entry.id} style={styles.entryCard}>
-            {/* Date and Edit Icon */}
             <View style={styles.entryHeader}>
               <Text style={styles.entryDate}>{entry.date}</Text>
               <TouchableOpacity>
-                <Text style={styles.editText}>âœï¸</Text>
+                <Text style={styles.editText}>Edit</Text>
               </TouchableOpacity>
             </View>
 
-            {/* Image */}
             {entry.image && <Image source={entry.image} style={styles.entryImage} />}
 
-            {/* Title and Notes */}
             <View style={styles.entryContent}>
               <Text style={styles.entryTitle}>{entry.title}</Text>
               <Text style={styles.entryNotes}>{entry.notes}</Text>
             </View>
 
-            {/* Mood */}
             <View style={styles.moodBadge}>
               <Text style={styles.moodText}>{entry.mood}</Text>
             </View>
           </View>
         ))}
       </ScrollView>
-    </SafeAreaProvider>
+    </SafeAreaView>
   );
 }
 
@@ -128,6 +125,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
   },
+  emptyText: {
+    color: "#9ca3af",
+    fontSize: 14,
+    paddingVertical: 24,
+    textAlign: "center",
+  },
   entryCard: {
     backgroundColor: "#ffffff",
     borderRadius: 16,
@@ -156,7 +159,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   editText: {
-    fontSize: 18,
+    color: "#4CA2A3",
+    fontSize: 13,
+    fontWeight: "600",
   },
   entryImage: {
     width: "100%",
@@ -187,6 +192,8 @@ const styles = StyleSheet.create({
     padding: 6,
   },
   moodText: {
-    fontSize: 20,
+    fontSize: 14,
+    color: "#1f2937",
+    fontWeight: "600",
   },
 });

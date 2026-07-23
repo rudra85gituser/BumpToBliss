@@ -31,7 +31,6 @@ export default function Login() {
     try {
       setSubmitting(true);
       await login(email, password);
-      router.replace("/(tabs)/home-wrapper");
     } catch (error) {
       Alert.alert("Login failed", error instanceof Error ? error.message : "Please try again.");
     } finally {
@@ -106,7 +105,7 @@ export default function Login() {
 
           {/* Signup Link */}
           <View style={styles.footerRow}>
-            <Text style={styles.footerText}>Don't have an account? </Text>
+            <Text style={styles.footerText}>{"Don't have an account? "}</Text>
             <TouchableOpacity onPress={() => router.push("/auth/signup")}>
               <Text style={styles.footerLink}>Sign Up</Text>
             </TouchableOpacity>

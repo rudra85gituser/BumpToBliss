@@ -15,15 +15,6 @@ import { usePregnancy } from "../../context/PregnancyContext";
 import { useGarbhaAllData } from "../../hooks/useGarbhaAllData";
 import UserInputDate from "./userInputDate";
 
-interface SectionWithSubsections {
-  id: number;
-  title: string;
-  garbha_sanskar_subsections: Array<{
-    id: number;
-    title: string;
-  }>;
-}
-
 export default function GarbhaSanskarCard() {
   const [showDateInput, setShowDateInput] = useState(false);
   const [selectedSectionId, setSelectedSectionId] = useState<number | null>(null);
@@ -74,19 +65,25 @@ export default function GarbhaSanskarCard() {
   // Set first section as default when sections load
   React.useEffect(() => {
     if (sections && sections.length > 0 && !selectedSectionId) {
-      setSelectedSectionId(sections[0].id);
+      const timeout = setTimeout(() => setSelectedSectionId(sections[0].id), 0);
+      return () => clearTimeout(timeout);
     }
   }, [sections, selectedSectionId]);
 
   // Reset subsection when section changes
   React.useEffect(() => {
-    setSelectedSubsectionId(null);
+    const timeout = setTimeout(() => setSelectedSubsectionId(null), 0);
+    return () => clearTimeout(timeout);
   }, [selectedSectionId]);
 
   // Set first subsection as default when subsections load
   React.useEffect(() => {
     if (subsectionsForSection.length > 0 && !selectedSubsectionId) {
-      setSelectedSubsectionId(subsectionsForSection[0].id);
+      const timeout = setTimeout(
+        () => setSelectedSubsectionId(subsectionsForSection[0].id),
+        0
+      );
+      return () => clearTimeout(timeout);
     }
   }, [subsectionsForSection, selectedSubsectionId]);
 

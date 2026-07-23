@@ -46,7 +46,7 @@ export default function DailyActivities() {
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>Today's progress</Text>
+          <Text style={styles.summaryTitle}>{"Today's progress"}</Text>
           <Text style={styles.summaryText}>
             {completedCount} of {activities.length} activities completed
           </Text>

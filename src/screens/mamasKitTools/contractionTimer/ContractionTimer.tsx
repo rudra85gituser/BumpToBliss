@@ -55,12 +55,6 @@ export default function ContractionTimer() {
     return `${hrs}:${mins}:${secs}`;
   };
 
-  const getIntensityColor = (value: number) => {
-    if (value < 33) return "#4CAF50"; // Green - Low
-    if (value < 66) return "#FFC107"; // Orange - Medium
-    return "#F44336"; // Red - High
-  };
-
   const getIntensityLabel = (value: number) => {
     if (value < 33) return "Low";
     if (value < 66) return "Medium";

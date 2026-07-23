@@ -2,7 +2,7 @@
 
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Image,
@@ -17,6 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { profile } from "@/src/constants/profile";
 import { useAuth } from "@/src/context/AuthContext";
+import { getUserProfile, type UserProfile } from "@/src/services/userDataService";
 
 type MenuItem = {
   icon: ImageSourcePropType;
@@ -45,11 +46,21 @@ const MenuItemRow: React.FC<MenuItemRowProps> = ({ item, onPress }) => (
 export default function Profile() {
   const router = useRouter();
   const { logout, user } = useAuth();
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
-  const [babies] = useState([
-    { id: "1", name: "Kiki", avatar: profile.kiki },
-    { id: "2", name: "Ayu", avatar: profile.ayu },
-  ]);
+  useEffect(() => {
+    if (!user) {
+      Promise.resolve().then(() => setUserProfile(null));
+      return;
+    }
+
+    getUserProfile(user.id).then(setUserProfile);
+  }, [user]);
+
+  const babyName = userProfile?.baby_name?.trim();
+  const babies = babyName
+    ? [{ id: "1", name: babyName, avatar: profile.kiki }]
+    : [];
 
   const quickActionsMenu: MenuItem[] = [
     { icon: profile.appointments, title: "Appointments", subtitle: "Upcoming Date 15.11.25" },
@@ -106,8 +117,15 @@ export default function Profile() {
         <View style={styles.profileCard}>
           <Image source={profile.profileImage} style={styles.profileImage} />
           <View style={styles.profileContent}>
-            <Text style={styles.profileName}>Soma Trivedi</Text>
+            <Text style={styles.profileName}>
+              {userProfile?.full_name ?? user?.email?.split("@")[0] ?? "Profile"}
+            </Text>
             <Text style={styles.profileEmail}>{user?.email ?? "No email available"}</Text>
+            {userProfile?.conception_date && (
+              <Text style={styles.profileMeta}>
+                Pregnancy date {new Date(userProfile.conception_date).toLocaleDateString()}
+              </Text>
+            )}
           </View>
           <Pressable style={styles.editButton} onPress={() => openPlaceholder("Edit Profile")}>
             <Image source={profile.edit} style={styles.editIcon} />
@@ -123,6 +141,7 @@ export default function Profile() {
                 <Text style={styles.babyName}>{baby.name}</Text>
               </View>
             ))}
+            {!babyName && <Text style={styles.emptyBabyText}>No baby profile added</Text>}
             <Pressable style={styles.addBabyButton} onPress={() => openPlaceholder("Add Baby")}>
               <Text style={styles.addBabyText}>+</Text>
             </Pressable>
@@ -210,6 +229,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#6b7280",
   },
+  profileMeta: {
+    fontSize: 12,
+    color: "#6b7280",
+    marginTop: 4,
+  },
   editButton: {
     width: 36,
     height: 36,
@@ -250,6 +274,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#374151",
     fontWeight: "500",
+  },
+  emptyBabyText: {
+    flex: 1,
+    fontSize: 12,
+    color: "#9ca3af",
   },
   addBabyButton: {
     width: 50,
