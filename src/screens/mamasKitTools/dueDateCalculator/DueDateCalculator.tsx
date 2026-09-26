@@ -2,8 +2,10 @@
 
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
+import { Calendar, ChevronDown, ChevronLeft } from "lucide-react-native";
 import { useState } from "react";
 import {
+  Image,
   Platform,
   ScrollView,
   StyleSheet,
@@ -13,10 +15,16 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import dueDateIllustration from "@/src/assets/dueDateCalculator/due-date-illustration.png";
 import { useAuth } from "@/src/context/AuthContext";
 import { upsertUserProfile } from "@/src/services/userDataService";
 
 const METHODS = ["Last Period", "Conception Date", "Ultrasound Date"];
+
+type DueDateResult = {
+  dueDate: Date;
+  weeksPregnant: number;
+};
 
 export default function DueDateCalculator() {
   const router = useRouter();
@@ -27,6 +35,7 @@ export default function DueDateCalculator() {
   const [showMethodDropdown, setShowMethodDropdown] = useState(false);
   const [showCycleDropdown, setShowCycleDropdown] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [result, setResult] = useState<DueDateResult | null>(null);
 
   const cycleLengths = Array.from({ length: 15 }, (_, index) =>
     (21 + index).toString(),
@@ -55,12 +64,6 @@ export default function DueDateCalculator() {
     const diffMs = now.getTime() - baseDate.getTime();
     const weeksPregnant = Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000));
 
-    const formattedDate = dueDate.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-
     if (user) {
       await upsertUserProfile(user.id, {
         email: user.email,
@@ -73,21 +76,14 @@ export default function DueDateCalculator() {
       });
     }
 
-    router.push({
-      pathname: "/mamasKitTools/due-date-calculator/your-baby-due-date",
-      params: {
-        date: formattedDate,
-        weeks: weeksPregnant.toString(),
-      },
-    });
+    setResult({ dueDate, weeksPregnant });
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Text style={styles.backButtonText}>{"<"}</Text>
+          <ChevronLeft size={22} color="#000" />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>Due Date Calculator</Text>
@@ -99,119 +95,148 @@ export default function DueDateCalculator() {
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
-        {/* Description */}
-        <View style={styles.infoCard}>
+        <View style={styles.card}>
           <Text style={styles.infoText}>
             Choose from a variety of options for a prediction of your due date
           </Text>
-        </View>
 
-        {/* Method Selection */}
-        <View style={styles.section}>
-          <Text style={styles.sectionLabel}>Method</Text>
-
-          <TouchableOpacity
-            style={styles.selectButton}
-            onPress={() => setShowMethodDropdown(!showMethodDropdown)}
-          >
-            <Text style={styles.selectButtonText}>{method}</Text>
-            <Text style={styles.selectArrow}>v</Text>
-          </TouchableOpacity>
-
-          {showMethodDropdown && (
-            <View style={styles.dropdown}>
-              {METHODS.map((item) => (
-                <TouchableOpacity
-                  key={item}
-                  style={styles.dropdownItem}
-                  onPress={() => {
-                    setMethod(item);
-                    setShowMethodDropdown(false);
-                  }}
-                >
-                  <Text style={styles.dropdownItemText}>{item}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-        </View>
-
-        {/* Date Picker */}
-        <View style={styles.section}>
-          <Text style={styles.sectionLabel}>
-            {method === "Last Period"
-              ? "First Date of Last Period"
-              : method === "Conception Date"
-                ? "Date of Conception"
-                : "Ultrasound Date"}
-          </Text>
-
-          <TouchableOpacity
-            onPress={() => setShowDatePicker(true)}
-            style={styles.selectButton}
-          >
-            <Text
-              style={[
-                styles.dateText,
-                selectedDate ? styles.dateTextSelected : styles.dateTextEmpty,
-              ]}
-            >
-              {selectedDate ? selectedDate.toDateString() : "Choose Date"}
-            </Text>
-            <Text style={styles.calendarIcon}>[]</Text>
-          </TouchableOpacity>
-
-          {showDatePicker && (
-            <DateTimePicker
-              value={selectedDate || new Date()}
-              mode="date"
-              display={Platform.OS === "ios" ? "inline" : "default"}
-              onChange={(_, date) => {
-                setShowDatePicker(Platform.OS === "ios");
-                if (date) {
-                  setSelectedDate(date);
-                }
-              }}
-            />
-          )}
-        </View>
-
-        {/* Cycle Length */}
-        {method === "Last Period" && (
           <View style={styles.section}>
-            <Text style={styles.sectionLabel}>Cycle length</Text>
+            <Text style={styles.sectionLabel}>Method</Text>
 
             <TouchableOpacity
               style={styles.selectButton}
-              onPress={() => setShowCycleDropdown(!showCycleDropdown)}
+              onPress={() => setShowMethodDropdown(!showMethodDropdown)}
             >
-              <Text style={styles.selectButtonText}>{cycleLength} days</Text>
-              <Text style={styles.selectArrow}>v</Text>
+              <Text style={styles.selectButtonText}>{method}</Text>
+              <ChevronDown size={18} color="#292D32" />
             </TouchableOpacity>
 
-            {showCycleDropdown && (
+            {showMethodDropdown && (
               <View style={styles.dropdown}>
-                {cycleLengths.map((length) => (
+                {METHODS.map((item) => (
                   <TouchableOpacity
-                    key={length}
+                    key={item}
                     style={styles.dropdownItem}
                     onPress={() => {
-                      setCycleLength(length);
-                      setShowCycleDropdown(false);
+                      setMethod(item);
+                      setShowMethodDropdown(false);
                     }}
                   >
-                    <Text style={styles.dropdownItemText}>{length} days</Text>
+                    <Text style={styles.dropdownItemText}>{item}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
             )}
           </View>
-        )}
 
-        {/* Calculate Button */}
-        <TouchableOpacity style={styles.calculateButton} onPress={handleCalculate}>
-          <Text style={styles.calculateButtonText}>Calculate</Text>
-        </TouchableOpacity>
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>
+              {method === "Last Period"
+                ? "First Date of Last Period"
+                : method === "Conception Date"
+                  ? "Date of Conception"
+                  : "Ultrasound Date"}
+            </Text>
+
+            <TouchableOpacity
+              onPress={() => setShowDatePicker(true)}
+              style={styles.selectButton}
+            >
+              <Text
+                style={[
+                  styles.dateText,
+                  selectedDate ? styles.dateTextSelected : styles.dateTextEmpty,
+                ]}
+              >
+                {selectedDate ? selectedDate.toDateString() : "Choose Date"}
+              </Text>
+              <Calendar size={18} color="#292D32" />
+            </TouchableOpacity>
+
+            {showDatePicker && (
+              <DateTimePicker
+                value={selectedDate || new Date()}
+                mode="date"
+                display={Platform.OS === "ios" ? "inline" : "default"}
+                onValueChange={(_event, date) => {
+                  if (date) {
+                    setSelectedDate(date);
+                  }
+                  if (Platform.OS === "android") {
+                    setShowDatePicker(false);
+                  }
+                }}
+                onDismiss={() => setShowDatePicker(false)}
+              />
+            )}
+          </View>
+
+          {method === "Last Period" && (
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>Cycle Length</Text>
+
+              <TouchableOpacity
+                style={styles.selectButton}
+                onPress={() => setShowCycleDropdown(!showCycleDropdown)}
+              >
+                <Text style={styles.selectButtonText}>{cycleLength} days</Text>
+                <ChevronDown size={18} color="#292D32" />
+              </TouchableOpacity>
+
+              {showCycleDropdown && (
+                <View style={styles.dropdown}>
+                  {cycleLengths.map((length) => (
+                    <TouchableOpacity
+                      key={length}
+                      style={styles.dropdownItem}
+                      onPress={() => {
+                        setCycleLength(length);
+                        setShowCycleDropdown(false);
+                      }}
+                    >
+                      <Text style={styles.dropdownItemText}>{length} days</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+            </View>
+          )}
+
+          {result && (
+            <View style={styles.resultSection}>
+              <Text style={styles.resultHeading}>
+                Your Due Date is  {result.dueDate.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </Text>
+              <Text style={styles.resultSubtext}>
+                Congratulations! You are {Math.max(result.weeksPregnant, 0)} weeks pregnant.
+              </Text>
+
+              <View style={styles.resultBadgeWrap}>
+                <Image
+                  source={dueDateIllustration}
+                  style={styles.resultIllustration}
+                  resizeMode="contain"
+                />
+                <Text style={styles.resultMonth}>
+                  {result.dueDate.toLocaleString("en-US", { month: "long" })}
+                </Text>
+                <View style={styles.resultBadge}>
+                  <Text style={styles.resultDay}>{result.dueDate.getDate()}</Text>
+                </View>
+              </View>
+            </View>
+          )}
+
+          <TouchableOpacity style={styles.calculateButton} onPress={handleCalculate}>
+            <Text style={styles.calculateButtonText}>
+              {result ? "Recalculate" : "Calculate"}
+            </Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -236,11 +261,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  backButtonText: {
-    fontSize: 24,
-    fontWeight: "600",
-    color: "#000",
-  },
   headerTitle: {
     fontSize: 18,
     fontWeight: "600",
@@ -253,16 +273,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 20,
   },
-  infoCard: {
+  card: {
     backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 24,
+    borderRadius: 20,
+    padding: 20,
   },
   infoText: {
-    fontSize: 14,
-    color: "#6b7280",
-    lineHeight: 20,
+    fontSize: 12,
+    color: "#494949",
+    lineHeight: 18,
+    marginBottom: 20,
   },
   section: {
     marginBottom: 20,
@@ -274,59 +294,100 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   selectButton: {
+    height: 48,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: "#fff",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
+    borderRadius: 14,
+    paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: "#00000021",
   },
   selectButtonText: {
-    fontSize: 14,
-    color: "#6b7280",
-  },
-  selectArrow: {
-    fontSize: 12,
-    color: "#9ca3af",
+    fontSize: 13,
+    color: "#292D32",
   },
   dropdown: {
     backgroundColor: "#fff",
-    borderRadius: 8,
+    borderRadius: 14,
     marginTop: 4,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: "#00000021",
+    overflow: "hidden",
   },
   dropdownItem: {
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#f3f4f6",
   },
   dropdownItemText: {
-    fontSize: 14,
-    color: "#1f2937",
+    fontSize: 13,
+    color: "#292D32",
   },
   dateText: {
-    fontSize: 14,
+    fontSize: 13,
   },
   dateTextSelected: {
-    color: "#111827",
+    color: "#292D32",
   },
   dateTextEmpty: {
-    color: "#6b7280",
+    color: "#9CA3AF",
   },
-  calendarIcon: {
-    fontSize: 18,
+  resultSection: {
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  resultHeading: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#292D32",
+    textAlign: "center",
+  },
+  resultSubtext: {
+    fontSize: 12,
+    color: "#494949",
+    textAlign: "center",
+    marginTop: 8,
+  },
+  resultBadgeWrap: {
+    width: 240,
+    height: 220,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 24,
+  },
+  resultIllustration: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+  },
+  resultMonth: {
+    fontFamily: "Praise",
+    fontSize: 34,
+    color: "#4CA2A3",
+  },
+  resultBadge: {
+    width: 91,
+    height: 91,
+    borderRadius: 45.5,
+    backgroundColor: "rgba(235, 248, 237, 0.6)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 4,
+  },
+  resultDay: {
+    fontFamily: "Praise",
+    fontSize: 48,
+    color: "#4CA2A3",
   },
   calculateButton: {
-    backgroundColor: "#20094D",
-    borderRadius: 15,
-    paddingVertical: 16,
+    height: 48,
     alignItems: "center",
-    marginBottom: 20,
+    justifyContent: "center",
+    backgroundColor: "#20094D",
+    borderRadius: 14,
   },
   calculateButtonText: {
     color: "#ffffff",

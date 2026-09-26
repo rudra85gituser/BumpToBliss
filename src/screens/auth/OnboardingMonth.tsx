@@ -1,34 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { PickerGrid, PickerGridItem } from "@/src/components/onboarding/PickerGrid";
+import { MONTH_NAMES } from "@/src/constants/months";
 import { useAuth } from "@/src/context/AuthContext";
 import { getUserProfile, upsertUserProfile } from "@/src/services/userDataService";
 
-const MONTHS = [
-  "JAN",
-  "FEB",
-  "MAR",
-  "APR",
-  "MAY",
-  "JUN",
-  "JUL",
-  "AUG",
-  "SEP",
-  "OCT",
-  "NOV",
-  "DEC",
-];
+const MONTH_ITEMS: PickerGridItem<number>[] = MONTH_NAMES.map((name, index) => ({
+  label: name.slice(0, 3).toUpperCase(),
+  value: index,
+}));
 
 export default function OnboardingMonth() {
   const router = useRouter();
@@ -47,73 +32,49 @@ export default function OnboardingMonth() {
   }, [user]);
 
   const handleNext = async () => {
-    if (babyName && user) {
-      await upsertUserProfile(user.id, {
-        email: user.email,
-        baby_name: babyName.trim(),
-        conception_month: selectedMonth,
-      });
-      router.replace("/auth/choose-year");
+    if (!babyName.trim()) {
+      Alert.alert("Missing details", "Please enter the baby's name to continue.");
+      return;
     }
+
+    if (!user) return;
+
+    await upsertUserProfile(user.id, {
+      email: user.email,
+      baby_name: babyName.trim(),
+      conception_month: selectedMonth,
+    });
+    router.replace("/auth/choose-year");
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.card}>
-          {/* Heading */}
-          <Text style={styles.heading}>{"Let's Make this more personalized"}</Text>
-          <Text style={styles.subHeading}>Select the month of conceive</Text>
+      <View style={styles.screen}>
+        <Text style={styles.heading}>{"Let's Make this more personalized"}</Text>
+        <Text style={styles.subHeading}>Select the month of conceive</Text>
 
-          {/* Month Grid */}
-          <View style={styles.monthGrid}>
-            {MONTHS.map((month, index) => (
-              <TouchableOpacity
-                key={month}
-                onPress={() => setSelectedMonth(index)}
-                activeOpacity={0.7}
-                style={[
-                  styles.monthButton,
-                  selectedMonth === index && styles.monthButtonActive,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.monthButtonText,
-                    selectedMonth === index && styles.monthButtonTextActive,
-                  ]}
-                >
-                  {month}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+        <PickerGrid
+          headerLabel={`${MONTH_NAMES[selectedMonth]}   ${new Date().getFullYear()}`}
+          items={MONTH_ITEMS}
+          selectedValue={selectedMonth}
+          onSelect={setSelectedMonth}
+        />
 
-          {/* Baby Name Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Name of baby</Text>
-            <TextInput
-              placeholder="ex - amy"
-              placeholderTextColor="#999"
-              value={babyName}
-              onChangeText={setBabyName}
-              style={styles.input}
-            />
-          </View>
-
-          {/* Next Button */}
-          <TouchableOpacity
-            onPress={handleNext}
-            activeOpacity={0.8}
-            style={styles.primaryButton}
-          >
-            <Text style={styles.primaryButtonText}>Next</Text>
-          </TouchableOpacity>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Name of baby</Text>
+          <TextInput
+            placeholder="ex - amy"
+            placeholderTextColor="#999"
+            value={babyName}
+            onChangeText={setBabyName}
+            style={styles.input}
+          />
         </View>
-      </ScrollView>
+
+        <TouchableOpacity onPress={handleNext} activeOpacity={0.8} style={styles.primaryButton}>
+          <Text style={styles.primaryButtonText}>Next</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
@@ -121,90 +82,59 @@ export default function OnboardingMonth() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#f8fbfb",
+    backgroundColor: "#F0E9E9",
   },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 40,
-  },
-  card: {
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+  screen: {
+    flex: 1,
+    paddingHorizontal: 32,
+    paddingTop: 38,
+    paddingBottom: 18,
   },
   heading: {
-    fontSize: 18,
+    color: "#090A0A",
+    fontSize: 16,
     fontWeight: "600",
-    color: "#333",
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: 9,
   },
   subHeading: {
-    fontSize: 14,
-    color: "#666",
+    color: "#242425",
+    fontSize: 12,
+    fontWeight: "400",
     textAlign: "center",
-    marginBottom: 24,
-  },
-  monthGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-    marginBottom: 24,
-  },
-  monthButton: {
-    width: "23%",
-    paddingVertical: 12,
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
-    backgroundColor: "#f5f5f5",
-  },
-  monthButtonActive: {
-    borderColor: "#a8d5a8",
-    backgroundColor: "#a8d5a8",
-  },
-  monthButtonText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#333",
-  },
-  monthButtonTextActive: {
-    color: "white",
+    marginBottom: 15,
   },
   inputGroup: {
-    marginBottom: 20,
+    marginTop: 17,
+    marginBottom: 0,
   },
   label: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#333",
-    marginBottom: 8,
+    color: "#242425",
+    marginBottom: 10,
+    paddingLeft: 8,
   },
   input: {
+    height: 48,
     borderWidth: 1,
-    borderColor: "#e0e0e0",
-    borderRadius: 12,
-    padding: 12,
-    fontSize: 14,
-    color: "#000",
+    borderColor: "#00000021",
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    fontSize: 13,
+    color: "#0F0F10",
   },
   primaryButton: {
-    backgroundColor: "#1a0033",
-    borderRadius: 12,
-    paddingVertical: 14,
+    alignItems: "center",
+    backgroundColor: "#20094D",
+    borderRadius: 14,
+    height: 48,
+    justifyContent: "center",
+    marginTop: "auto",
   },
   primaryButtonText: {
-    color: "white",
-    fontSize: 16,
+    color: "#FFFFFF",
+    fontSize: 14,
     fontWeight: "600",
     textAlign: "center",
   },

@@ -1,14 +1,14 @@
 import { router } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  FlatList,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { usePregnancy } from "../../context/PregnancyContext";
@@ -17,14 +17,23 @@ import UserInputDate from "./userInputDate";
 
 export default function GarbhaSanskarCard() {
   const [showDateInput, setShowDateInput] = useState(false);
-  const [selectedSectionId, setSelectedSectionId] = useState<number | null>(null);
-  const [selectedSubsectionId, setSelectedSubsectionId] = useState<number | null>(null);
+  const [selectedSectionId, setSelectedSectionId] = useState<number | null>(
+    null,
+  );
+  const [selectedSubsectionId, setSelectedSubsectionId] = useState<
+    number | null
+  >(null);
 
-  const { pregnancyStartDate, pregnancyDay, pregnancyWeek, setPregnancyStartDate } =
-    usePregnancy();
+  const {
+    pregnancyStartDate,
+    pregnancyDay,
+    pregnancyWeek,
+    isLoading: pregnancyLoading,
+    setPregnancyStartDate,
+  } = usePregnancy();
   const { loading, error, sections, content, refetch } = useGarbhaAllData(
     pregnancyDay,
-    pregnancyWeek
+    pregnancyWeek,
   );
 
   const handleDateSelected = (date: Date, day: number, week: number) => {
@@ -39,7 +48,7 @@ export default function GarbhaSanskarCard() {
     if (!selectedSectionId || !sections) return [];
 
     const selectedSection = sections.find(
-      (s: any) => s.id === selectedSectionId
+      (s: any) => s.id === selectedSectionId,
     );
     return selectedSection?.garbha_sanskar_subsections || [];
   }, [selectedSectionId, sections]);
@@ -52,7 +61,7 @@ export default function GarbhaSanskarCard() {
     return content.filter(
       (item: any) =>
         item.garbha_sanskar_section?.id === selectedSectionId &&
-        item.garbha_sanskar_subsection?.id === selectedSubsectionId
+        item.garbha_sanskar_subsection?.id === selectedSubsectionId,
     );
   }, [selectedSectionId, selectedSubsectionId, content]);
 
@@ -81,7 +90,7 @@ export default function GarbhaSanskarCard() {
     if (subsectionsForSection.length > 0 && !selectedSubsectionId) {
       const timeout = setTimeout(
         () => setSelectedSubsectionId(subsectionsForSection[0].id),
-        0
+        0,
       );
       return () => clearTimeout(timeout);
     }
@@ -90,7 +99,7 @@ export default function GarbhaSanskarCard() {
   return (
     <>
       <UserInputDate
-        visible={showDateInput || !pregnancyStartDate}
+        visible={showDateInput || (!pregnancyLoading && !pregnancyStartDate)}
         onDateSelected={handleDateSelected}
         onCancel={() => setShowDateInput(false)}
       />
@@ -107,7 +116,7 @@ export default function GarbhaSanskarCard() {
             </View>
 
             {/* Pregnancy Info */}
-            {pregnancyDay && pregnancyWeek && (
+            {pregnancyDay !== null && pregnancyWeek !== null && (
               <View style={styles.pregnancyInfo}>
                 <View style={styles.pregnancyStats}>
                   <View style={styles.statBox}>
@@ -134,7 +143,7 @@ export default function GarbhaSanskarCard() {
             )}
 
             {/* Error State */}
-            {error && !loading && (
+            {!!error && !loading && (
               <View style={styles.errorContainer}>
                 <Text style={styles.errorText}>{error}</Text>
                 <TouchableOpacity style={styles.retryButton} onPress={refetch}>
@@ -165,7 +174,8 @@ export default function GarbhaSanskarCard() {
                         <Text
                           style={[
                             styles.tabText,
-                            selectedSectionId === section.id && styles.tabTextActive,
+                            selectedSectionId === section.id &&
+                              styles.tabTextActive,
                           ]}
                           numberOfLines={1}
                         >
@@ -177,140 +187,149 @@ export default function GarbhaSanskarCard() {
                 </ScrollView>
 
                 {/* Level 2: Subsections Tabs */}
-                {selectedSectionId && subsectionsForSection.length > 0 && (
-                  <>
-                    <Text style={styles.levelTitle}>Sub-Categories</Text>
-                    <ScrollView
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      style={styles.subsectionsScroll}
-                    >
-                      <View style={styles.subsectionsRow}>
-                        {subsectionsForSection.map((subsection: any) => (
-                          <TouchableOpacity
-                            key={subsection.id}
-                            onPress={() => setSelectedSubsectionId(subsection.id)}
-                            style={[
-                              styles.tab,
-                              styles.subsectionTab,
-                              selectedSubsectionId === subsection.id &&
-                                styles.tabActive,
-                            ]}
-                          >
-                            <Text
+                {selectedSectionId !== null &&
+                  subsectionsForSection.length > 0 && (
+                    <>
+                      <Text style={styles.levelTitle}>Sub-Categories</Text>
+                      <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        style={styles.subsectionsScroll}
+                      >
+                        <View style={styles.subsectionsRow}>
+                          {subsectionsForSection.map((subsection: any) => (
+                            <TouchableOpacity
+                              key={subsection.id}
+                              onPress={() =>
+                                setSelectedSubsectionId(subsection.id)
+                              }
                               style={[
-                                styles.tabText,
+                                styles.tab,
+                                styles.subsectionTab,
                                 selectedSubsectionId === subsection.id &&
-                                  styles.tabTextActive,
+                                  styles.tabActive,
                               ]}
-                              numberOfLines={1}
                             >
-                              {subsection.title}
-                            </Text>
-                          </TouchableOpacity>
-                        ))}
-                      </View>
-                    </ScrollView>
+                              <Text
+                                style={[
+                                  styles.tabText,
+                                  selectedSubsectionId === subsection.id &&
+                                    styles.tabTextActive,
+                                ]}
+                                numberOfLines={1}
+                              >
+                                {subsection.title}
+                              </Text>
+                            </TouchableOpacity>
+                          ))}
+                        </View>
+                      </ScrollView>
 
-                    {/* Level 3: Content Items */}
-                    {selectedSubsectionId && (
-                      <>
-                        {filteredContent.length > 0 ? (
-                          <FlatList
-                            data={filteredContent}
-                            renderItem={({ item }) => (
-                              <TouchableOpacity
-                                    style={styles.contentItem}
-                                    onPress={() =>
-                                      router.push({
-                                        pathname: "/garbhaSanskar/contentDetail",
-                                        params: {
-                                         contentId: item.id,
-                                         pregnancyDay,
-                                         pregnancyWeek,
+                      {/* Level 3: Content Items */}
+                      {selectedSubsectionId !== null && (
+                        <>
+                          {filteredContent.length > 0 ? (
+                            <FlatList
+                              data={filteredContent}
+                              renderItem={({ item }) => (
+                                <TouchableOpacity
+                                  style={styles.contentItem}
+                                  onPress={() =>
+                                    router.push({
+                                      pathname: "/garbhaSanskar/contentDetail",
+                                      params: {
+                                        contentId: item.id,
+                                        pregnancyDay,
+                                        pregnancyWeek,
+                                      },
+                                    })
+                                  }
+                                >
+                                  {item.thumbnail && (
+                                    <Image
+                                      source={{
+                                        uri:
+                                          item.thumbnail.url ||
+                                          "https://via.placeholder.com/100",
+                                      }}
+                                      style={styles.contentImage}
+                                    />
+                                  )}
 
-                                        },
-                                      })
-                                    }
-                                  >
-                                {item.thumbnail && (
-                                  <Image
-                                    source={{
-                                      uri: item.thumbnail.url ||
-                                        "https://via.placeholder.com/100",
-                                    }}
-                                    style={styles.contentImage}
-                                  />
-                                )}
-
-                                <View style={styles.contentMeta}>
-                                  <Text style={styles.contentTitle} numberOfLines={2}>
-                                    {item.title}
-                                  </Text>
-                                  <Text
-                                    style={styles.contentDescription}
-                                    numberOfLines={2}
-                                  >
-                                    {item.shortDescription || item.description}
-                                  </Text>
-
-                                  <View style={styles.contentFooter}>
-                                    <View
-                                      style={[
-                                        styles.contentType,
-                                        {
-                                          backgroundColor:
-                                            item.contentsType === "video"
-                                              ? "#F4A460"
-                                              : item.contentsType === "article"
-                                              ? "#B8A2D1"
-                                              : "#A8D8E1",
-                                        },
-                                      ]}
+                                  <View style={styles.contentMeta}>
+                                    <Text
+                                      style={styles.contentTitle}
+                                      numberOfLines={2}
                                     >
-                                      <Text style={styles.contentTypeText}>
-                                        {item.contentsType}
-                                      </Text>
+                                      {item.title}
+                                    </Text>
+                                    <Text
+                                      style={styles.contentDescription}
+                                      numberOfLines={2}
+                                    >
+                                      {item.shortDescription ||
+                                        item.description}
+                                    </Text>
+
+                                    <View style={styles.contentFooter}>
+                                      <View
+                                        style={[
+                                          styles.contentType,
+                                          {
+                                            backgroundColor:
+                                              item.contentsType === "video"
+                                                ? "#F4A460"
+                                                : item.contentsType ===
+                                                    "article"
+                                                  ? "#B8A2D1"
+                                                  : "#A8D8E1",
+                                          },
+                                        ]}
+                                      >
+                                        <Text style={styles.contentTypeText}>
+                                          {item.contentsType}
+                                        </Text>
+                                      </View>
+                                      {item.durationMinutes && (
+                                        <Text style={styles.duration}>
+                                          {item.durationMinutes} min
+                                        </Text>
+                                      )}
                                     </View>
-                                    {item.durationMinutes && (
-                                      <Text style={styles.duration}>
-                                        {item.durationMinutes} min
-                                      </Text>
-                                    )}
                                   </View>
+                                </TouchableOpacity>
+                              )}
+                              keyExtractor={(item: any) => item.id.toString()}
+                              scrollEnabled={false}
+                              ListEmptyComponent={
+                                <View style={styles.emptyContainer}>
+                                  <Text style={styles.emptyText}>
+                                    No content available
+                                  </Text>
                                 </View>
-                              </TouchableOpacity>
-                            )}
-                            keyExtractor={(item: any) => item.id.toString()}
-                            scrollEnabled={false}
-                            ListEmptyComponent={
-                              <View style={styles.emptyContainer}>
-                                <Text style={styles.emptyText}>
-                                  No content available
-                                </Text>
-                              </View>
-                            }
-                          />
-                        ) : (
-                          <View style={styles.emptyContainer}>
-                            <Text style={styles.emptyText}>
-                              No content available for this subsection
-                            </Text>
-                          </View>
-                        )}
-                      </>
-                    )}
-                  </>
-                )}
+                              }
+                            />
+                          ) : (
+                            <View style={styles.emptyContainer}>
+                              <Text style={styles.emptyText}>
+                                No content available for this subsection
+                              </Text>
+                            </View>
+                          )}
+                        </>
+                      )}
+                    </>
+                  )}
 
                 {/* No Subsections Message */}
-                {selectedSectionId && subsectionsForSection.length === 0 && (
-                  <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyText}>
-                      No subsections available
-                    </Text>
-                  </View>
-                )}
+                {selectedSectionId !== null &&
+                  subsectionsForSection.length === 0 && (
+                    <View style={styles.emptyContainer}>
+                      <Text style={styles.emptyText}>
+                        No subsections available
+                      </Text>
+                    </View>
+                  )}
               </>
             )}
 

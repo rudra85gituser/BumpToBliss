@@ -100,13 +100,16 @@ export default function BabyKickCounter() {
                 <DateTimePicker
                   value={startTime || new Date()}
                   mode="time"
-                  display={Platform.OS === "ios" ? "default" : "default"}
-                  onChange={(_, selectedDate) => {
-                    setShowStartTimePicker(Platform.OS === "ios");
+                  display="default"
+                  onValueChange={(_event, selectedDate) => {
                     if (selectedDate) {
                       setStartTime(selectedDate);
                     }
+                    if (Platform.OS === "android") {
+                      setShowStartTimePicker(false);
+                    }
                   }}
+                  onDismiss={() => setShowStartTimePicker(false)}
                 />
               )}
             </View>
@@ -125,13 +128,16 @@ export default function BabyKickCounter() {
                 <DateTimePicker
                   value={endTime || new Date()}
                   mode="time"
-                  display={Platform.OS === "ios" ? "default" : "default"}
-                  onChange={(_, selectedDate) => {
-                    setShowEndTimePicker(Platform.OS === "ios");
+                  display="default"
+                  onValueChange={(_event, selectedDate) => {
                     if (selectedDate) {
                       setEndTime(selectedDate);
                     }
+                    if (Platform.OS === "android") {
+                      setShowEndTimePicker(false);
+                    }
                   }}
+                  onDismiss={() => setShowEndTimePicker(false)}
                 />
               )}
             </View>

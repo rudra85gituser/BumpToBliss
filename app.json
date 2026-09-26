@@ -4,16 +4,17 @@
     "slug": "BumpToBliss",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/app-logo/batman1.png",
+    "icon": "./src/assets/brand/app-icon-cream-1024.png",
     "scheme": "bumptobliss",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./src/assets/app-logo/batman1.png"
+      "icon": "./src/assets/brand/app-icon-cream-1024.png",
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#ffffff",
-        "foregroundImage": "./src/assets/app-logo/batman1.png"
+        "backgroundColor": "#F0E9E9",
+        "foregroundImage": "./src/assets/brand/app-icon-cream-1024.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
@@ -21,24 +22,23 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./src/assets/app-logo/batman1.png"
+      "favicon": "./src/assets/brand/app-icon-cream-1024.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
-          "android": {
-            "image": "./src/assets/app-logo/batman1.png",
-            "imageWidth": 76
-          }
+          "image": "./src/assets/brand/splash-cream-1242x2688.png",
+          "resizeMode": "cover",
+          "backgroundColor": "#F0E9E9"
         }
       ],
       "@react-native-community/datetimepicker",
       "react-native-video",
       "expo-image",
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-apple-authentication"
     ],
     "experiments": {
       "typedRoutes": true,

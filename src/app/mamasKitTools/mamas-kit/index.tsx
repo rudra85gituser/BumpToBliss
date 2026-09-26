@@ -13,9 +13,9 @@ import FeatureCard from "../../../screens/mamasKitTools/FeatureCard";
 
 const features = [
   {
-    id: "baby-kick-counter",
-    title: "Baby Kick Counter",
-    image: tools.babyKickCounter,
+    id: "due-date-calculator",
+    title: "Due Date Calculator",
+    image: tools.dueDateCalculator,
     badge: false,
   },
   {
@@ -25,10 +25,16 @@ const features = [
     badge: false,
   },
   {
-    id: "food-tracking",
-    title: "Food Tracking",
-    image: tools.foodTracking,
-    badge: true,
+    id: "baby-kick-counter",
+    title: "Baby Kick Counter",
+    image: tools.babyKickCounter,
+    badge: false,
+  },
+  {
+    id: "contraction-timer",
+    title: "Contraction Timer",
+    image: tools.contractionTimer,
+    badge: false,
   },
   {
     id: "water-intake",
@@ -37,10 +43,10 @@ const features = [
     badge: false,
   },
   {
-    id: "daily-activities",
-    title: "Daily Activities",
-    image: tools.dailyActivities,
-    badge: true,
+    id: "bumpy-gallery",
+    title: "Bumpy Gallery",
+    image: tools.bumpyGallery,
+    badge: false,
   },
   {
     id: "baby-name-list",
@@ -53,12 +59,6 @@ const features = [
     title: "Travel Checklist",
     image: tools.travelChecklist,
     badge: true,
-  },
-  {
-    id: "due-date-calculator",
-    title: "Due Date Calculator",
-    image: tools.dueDateCalculator,
-    badge: false,
   },
 ];
 

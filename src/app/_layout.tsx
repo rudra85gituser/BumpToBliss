@@ -1,11 +1,20 @@
 "use client";
 
+import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { AuthProvider } from "@/src/context/AuthContext";
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    Praise: require("@/src/assets/fonts/Praise-Regular.ttf"),
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <SafeAreaProvider>
       <AuthProvider>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import {
-  ScrollView,
+  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -12,18 +12,17 @@ import {
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { ConceptionDateCalendar } from "@/src/components/onboarding/ConceptionDateCalendar";
 import { useAuth } from "@/src/context/AuthContext";
 import { getUserProfile, upsertUserProfile } from "@/src/services/userDataService";
 
-const WEEK_DAYS = ["S", "M", "T", "W", "T", "F", "S"];
+const today = new Date();
 
 export default function OnboardingDate() {
   const router = useRouter();
   const { user } = useAuth();
   const [selectedDate, setSelectedDate] = useState(16);
   const [babyName, setBabyName] = useState("");
-
-  const days = Array.from({ length: 31 }, (_, index) => index + 1);
 
   useEffect(() => {
     if (!user) return;
@@ -36,62 +35,34 @@ export default function OnboardingDate() {
   }, [user]);
 
   const handleNext = async () => {
-    if (babyName && user) {
-      await upsertUserProfile(user.id, {
-        email: user.email,
-        baby_name: babyName.trim(),
-        conception_day: selectedDate,
-      });
-      router.replace("/auth/choose-month");
+    if (!babyName.trim()) {
+      Alert.alert("Missing details", "Please enter the baby's name to continue.");
+      return;
     }
+
+    if (!user) return;
+
+    await upsertUserProfile(user.id, {
+      email: user.email,
+      baby_name: babyName.trim(),
+      conception_day: selectedDate,
+    });
+    router.replace("/auth/choose-month");
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.card}>
+      <View style={styles.screen}>
           {/* Heading */}
           <Text style={styles.heading}>{"Let's Make this more personalized"}</Text>
           <Text style={styles.subHeading}>Select the day of conceive</Text>
 
-          {/* Calendar Header */}
-          <Text style={styles.calendarTitle}>July 2025</Text>
-
-          {/* Days of Week Header */}
-          <View style={styles.weekHeader}>
-            {WEEK_DAYS.map((day, index) => (
-              <Text key={`${day}-${index}`} style={styles.weekDay}>
-                {day}
-              </Text>
-            ))}
-          </View>
-
-          {/* Calendar Grid */}
-          <View style={styles.calendarGrid}>
-            {days.map((day) => (
-              <TouchableOpacity
-                key={day}
-                onPress={() => setSelectedDate(day)}
-                activeOpacity={0.7}
-                style={[
-                  styles.dayButton,
-                  selectedDate === day && styles.dayButtonActive,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.dayButtonText,
-                    selectedDate === day && styles.dayButtonTextActive,
-                  ]}
-                >
-                  {day}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <ConceptionDateCalendar
+            month={today.getMonth()}
+            onSelectDate={setSelectedDate}
+            selectedDate={selectedDate}
+            year={today.getFullYear()}
+          />
 
           {/* Baby Name Input */}
           <View style={styles.inputGroup}>
@@ -113,8 +84,7 @@ export default function OnboardingDate() {
           >
             <Text style={styles.primaryButtonText}>Next</Text>
           </TouchableOpacity>
-        </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -122,106 +92,58 @@ export default function OnboardingDate() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#f8fbfb",
+    backgroundColor: "#F0E9E9",
   },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 40,
-  },
-  card: {
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+  screen: {
+    flex: 1,
+    paddingHorizontal: 32,
+    paddingTop: 38,
+    paddingBottom: 18,
   },
   heading: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#333",
-    textAlign: "center",
-    marginBottom: 8,
-  },
-  subHeading: {
-    fontSize: 14,
-    color: "#666",
-    textAlign: "center",
-    marginBottom: 24,
-  },
-  calendarTitle: {
+    color: "#090A0A",
     fontSize: 16,
     fontWeight: "600",
-    color: "#333",
     textAlign: "center",
-    marginBottom: 16,
+    marginBottom: 9,
   },
-  weekHeader: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 12,
-  },
-  weekDay: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#999",
-    width: "14.28%",
-    textAlign: "center",
-  },
-  calendarGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginBottom: 24,
-  },
-  dayButton: {
-    width: "14.28%",
-    aspectRatio: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  dayButtonActive: {
-    backgroundColor: "#a8d5a8",
-    borderRadius: 8,
-  },
-  dayButtonText: {
+  subHeading: {
+    color: "#696969",
     fontSize: 14,
-    fontWeight: "500",
-    color: "#333",
-  },
-  dayButtonTextActive: {
-    fontWeight: "600",
-    color: "white",
+    textAlign: "center",
+    marginBottom: 15,
   },
   inputGroup: {
-    marginBottom: 20,
+    marginTop: 17,
+    marginBottom: 0,
   },
   label: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#333",
-    marginBottom: 8,
+    color: "#242425",
+    marginBottom: 10,
+    paddingLeft: 8,
   },
   input: {
+    height: 48,
     borderWidth: 1,
-    borderColor: "#e0e0e0",
-    borderRadius: 12,
-    padding: 12,
-    fontSize: 14,
-    color: "#000",
+    borderColor: "#00000021",
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    fontSize: 13,
+    color: "#0F0F10",
   },
   primaryButton: {
-    backgroundColor: "#1a0033",
-    borderRadius: 12,
-    paddingVertical: 14,
+    alignItems: "center",
+    backgroundColor: "#20094D",
+    borderRadius: 16,
+    height: 48,
+    justifyContent: "center",
+    marginTop: "auto",
   },
   primaryButtonText: {
-    color: "white",
-    fontSize: 16,
+    color: "#FFFFFF",
+    fontSize: 14,
     fontWeight: "600",
     textAlign: "center",
   },

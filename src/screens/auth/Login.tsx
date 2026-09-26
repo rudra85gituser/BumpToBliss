@@ -4,20 +4,22 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
     Alert,
-    ScrollView,
     StyleSheet,
     Text,
-    TextInput,
     TouchableOpacity,
     View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
+import { AuthFormShell } from "@/src/components/auth/AuthFormShell";
+import { AuthTextField } from "@/src/components/auth/AuthTextField";
+import { SocialAuthOptions } from "@/src/components/auth/SocialAuthOptions";
+import { Logo } from "@/src/components/brand/Logo";
+import { authImages } from "@/src/constants/authImages";
 import { useAuth } from "@/src/context/AuthContext";
 
 export default function Login() {
   const router = useRouter();
-  const { isAuthenticated, isLoading, login } = useAuth();
+  const { isAuthenticated, isLoading, login, loginWithGoogle } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -38,6 +40,28 @@ export default function Login() {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      await loginWithGoogle();
+    } catch (error) {
+      Alert.alert(
+        "Google sign-in failed",
+        error instanceof Error ? error.message : "Please try again.",
+      );
+    }
+  };
+
+  // const handleAppleLogin = async () => {
+  //   try {
+  //     await loginWithApple();
+  //   } catch (error) {
+  //     Alert.alert(
+  //       "Apple sign-in failed",
+  //       error instanceof Error ? error.message : "Please try again.",
+  //     );
+  //   }
+  // };
+
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
       router.replace("/(tabs)/home-wrapper");
@@ -45,16 +69,11 @@ export default function Login() {
   }, [isAuthenticated, isLoading, router]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.card}>
+    <AuthFormShell>
           {/* Logo */}
           <View style={styles.logoContainer}>
             <View style={styles.logo}>
-              <Text style={styles.logoText}>LOGO</Text>
+              <Logo size={36} />
             </View>
           </View>
 
@@ -65,31 +84,25 @@ export default function Login() {
           </Text>
 
           {/* Email Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="ex - abc@gmail.com"
-            placeholderTextColor="#999"
+          <AuthTextField
+            label="Email"
+            placeholder="ex - abc@gmail.com"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
+            autoComplete="email"
           />
-          </View>
 
           {/* Password Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="**********"
-              placeholderTextColor="#999"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
-          </View>
+          <AuthTextField
+            label="Password"
+            placeholder="**********"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            autoComplete="current-password"
+          />
 
           {/* Log In Button */}
           <TouchableOpacity
@@ -103,6 +116,13 @@ export default function Login() {
             </Text>
           </TouchableOpacity>
 
+          <SocialAuthOptions
+            googleIcon={authImages.google}
+            onGooglePress={handleGoogleLogin}
+            // appleIcon={authImages.apple}
+            // onApplePress={handleAppleLogin}
+          />
+
           {/* Signup Link */}
           <View style={styles.footerRow}>
             <Text style={styles.footerText}>{"Don't have an account? "}</Text>
@@ -110,93 +130,49 @@ export default function Login() {
               <Text style={styles.footerLink}>Sign Up</Text>
             </TouchableOpacity>
           </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    </AuthFormShell>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#f8fbfb",
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 40,
-  },
-  card: {
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-  },
   logoContainer: {
     alignItems: "center",
-    marginBottom: 30,
+    marginBottom: 29,
   },
   logo: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: "#f0f0f0",
+    width: 57,
+    height: 57,
+    borderRadius: 29,
+    backgroundColor: "#F0F0F0",
     justifyContent: "center",
     alignItems: "center",
   },
-  logoText: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#333",
-  },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#000",
-    marginBottom: 8,
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#0F0F10",
+    marginBottom: 11,
     textAlign: "center",
   },
   subtitle: {
-    fontSize: 14,
-    color: "#666",
+    fontSize: 12,
+    color: "#606060",
     textAlign: "center",
-    marginBottom: 24,
-  },
-  inputGroup: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: 8,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
-    borderRadius: 12,
-    padding: 12,
-    fontSize: 14,
-    color: "#000",
+    marginBottom: 23,
   },
   primaryButton: {
-    backgroundColor: "#1a0033",
-    borderRadius: 12,
-    paddingVertical: 14,
-    marginTop: 20,
-    marginBottom: 20,
+    alignItems: "center",
+    backgroundColor: "#20094D",
+    borderRadius: 14,
+    height: 46,
+    justifyContent: "center",
   },
   disabledButton: {
     opacity: 0.65,
   },
   primaryButtonText: {
-    color: "white",
-    fontSize: 16,
+    color: "#FFFFFF",
+    fontSize: 14,
     fontWeight: "600",
     textAlign: "center",
   },
@@ -206,12 +182,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   footerText: {
-    fontSize: 13,
-    color: "#666",
+    fontSize: 12,
+    color: "#454545",
   },
   footerLink: {
-    fontSize: 13,
-    color: "#1a0033",
+    fontSize: 12,
+    color: "#0F0F10",
     fontWeight: "600",
   },
 });

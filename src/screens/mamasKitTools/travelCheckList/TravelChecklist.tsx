@@ -1,10 +1,13 @@
 "use client";
 
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { ChevronLeft, Edit2, Image as ImageIcon, Plus, Trash2, X } from "lucide-react-native";
 import { useState } from "react";
 import {
   Alert,
+  ImageBackground,
+  ImageSourcePropType,
   Modal,
   ScrollView,
   StyleSheet,
@@ -14,6 +17,9 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import hospitalChecklistImage from "@/src/assets/travelCheckList/hospital-checklist.jpg";
+import travelChecklistImage from "@/src/assets/travelCheckList/travel-checklist.jpg";
 
 interface ChecklistItem {
   id: string;
@@ -26,6 +32,7 @@ interface ChecklistCategory {
   name: string;
   emoji: string;
   color: string;
+  image?: ImageSourcePropType;
   items: ChecklistItem[];
 }
 
@@ -35,6 +42,7 @@ const defaultCategories: ChecklistCategory[] = [
     name: "Hospital Checklist",
     emoji: "🏥",
     color: "#8bd4d0",
+    image: hospitalChecklistImage,
     items: [
       { id: "1-1", label: "Clothes", checked: false },
       { id: "1-2", label: "Bottle/ Flask", checked: true },
@@ -48,6 +56,7 @@ const defaultCategories: ChecklistCategory[] = [
     name: "Travel Checklist",
     emoji: "🧳",
     color: "#98d7d2",
+    image: travelChecklistImage,
     items: [
       { id: "2-1", label: "Passport", checked: false },
       { id: "2-2", label: "Travel Documents", checked: false },
@@ -193,10 +202,25 @@ export default function TravelChecklist() {
         <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
           <View style={styles.detailCard}>
             <Text style={styles.detailTitle}>{currentCategory.name}</Text>
-            <View style={[styles.heroImage, { backgroundColor: currentCategory.color }]}>
-              <Text style={styles.heroEmoji}>{currentCategory.emoji}</Text>
-              <Text style={styles.heroText}>{currentCategory.name}</Text>
-            </View>
+            {currentCategory.image ? (
+              <ImageBackground
+                source={currentCategory.image}
+                style={styles.heroImage}
+                imageStyle={styles.heroImageArt}
+              >
+                <LinearGradient
+                  colors={["transparent", currentCategory.color]}
+                  style={styles.heroImageOverlay}
+                >
+                  <Text style={styles.heroText}>{currentCategory.name}</Text>
+                </LinearGradient>
+              </ImageBackground>
+            ) : (
+              <View style={[styles.heroImage, { backgroundColor: currentCategory.color }]}>
+                <Text style={styles.heroEmoji}>{currentCategory.emoji}</Text>
+                <Text style={styles.heroText}>{currentCategory.name}</Text>
+              </View>
+            )}
 
             <View style={styles.progressCard}>
               <Text style={styles.progressText}>
@@ -307,10 +331,25 @@ export default function TravelChecklist() {
                 style={styles.categoryCard}
                 activeOpacity={0.85}
               >
-                <View style={[styles.categoryArt, { backgroundColor: category.color }]}>
-                  <Text style={styles.categoryEmoji}>{category.emoji}</Text>
-                  <Text style={styles.categoryName}>{category.name}</Text>
-                </View>
+                {category.image ? (
+                  <ImageBackground
+                    source={category.image}
+                    style={styles.categoryArt}
+                    imageStyle={styles.categoryArtImage}
+                  >
+                    <LinearGradient
+                      colors={["transparent", category.color]}
+                      style={styles.categoryArtOverlay}
+                    >
+                      <Text style={styles.categoryName}>{category.name}</Text>
+                    </LinearGradient>
+                  </ImageBackground>
+                ) : (
+                  <View style={[styles.categoryArt, { backgroundColor: category.color }]}>
+                    <Text style={styles.categoryEmoji}>{category.emoji}</Text>
+                    <Text style={styles.categoryName}>{category.name}</Text>
+                  </View>
+                )}
                 <Text style={styles.categoryProgress}>
                   {checkedCount} of {category.items.length} completed
                 </Text>
@@ -421,6 +460,18 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     padding: 12,
   },
+  categoryArtImage: {
+    resizeMode: "cover",
+  },
+  categoryArtOverlay: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: "60%",
+    justifyContent: "flex-end",
+    padding: 12,
+  },
   categoryEmoji: {
     position: "absolute",
     top: 16,
@@ -464,6 +515,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 16,
+    overflow: "hidden",
+  },
+  heroImageArt: {
+    resizeMode: "cover",
+  },
+  heroImageOverlay: {
+    flex: 1,
+    width: "100%",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    paddingBottom: 16,
   },
   heroEmoji: {
     fontSize: 52,

@@ -1,22 +1,14 @@
 "use client";
 
 import { useRouter } from "expo-router";
+import { ChevronLeft, Pencil } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { getMoodEmoji, JournalEntry } from "@/src/constants/journal";
 import { useAuth } from "@/src/context/AuthContext";
 import { getUserCollection } from "@/src/services/userDataService";
-
-type JournalEntry = {
-  id: string;
-  date: string;
-  title: string;
-  mood: string;
-  image?: any;
-  notes: string;
-  created_at?: string;
-};
 
 export default function Journal() {
   const router = useRouter();
@@ -33,7 +25,7 @@ export default function Journal() {
     <SafeAreaView style={styles.provider}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Text style={styles.backButtonText}>{"<"}</Text>
+          <ChevronLeft size={22} color="#000" />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>Journal</Text>
@@ -58,12 +50,22 @@ export default function Journal() {
           <View key={entry.id} style={styles.entryCard}>
             <View style={styles.entryHeader}>
               <Text style={styles.entryDate}>{entry.date}</Text>
-              <TouchableOpacity>
-                <Text style={styles.editText}>Edit</Text>
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() =>
+                  router.push({
+                    pathname: "/mamasKitTools/journal/new-entry",
+                    params: { id: entry.id },
+                  })
+                }
+              >
+                <Pencil size={14} color="#4CA2A3" />
               </TouchableOpacity>
             </View>
 
-            {entry.image && <Image source={entry.image} style={styles.entryImage} />}
+            {!!entry.image && (
+              <Image source={{ uri: entry.image }} style={styles.entryImage} />
+            )}
 
             <View style={styles.entryContent}>
               <Text style={styles.entryTitle}>{entry.title}</Text>
@@ -71,7 +73,7 @@ export default function Journal() {
             </View>
 
             <View style={styles.moodBadge}>
-              <Text style={styles.moodText}>{entry.mood}</Text>
+              <Text style={styles.moodEmoji}>{getMoodEmoji(entry.mood)}</Text>
             </View>
           </View>
         ))}
@@ -98,11 +100,6 @@ const styles = StyleSheet.create({
     height: 24,
     justifyContent: "center",
     alignItems: "center",
-  },
-  backButtonText: {
-    fontSize: 24,
-    fontWeight: "600",
-    color: "#000",
   },
   headerTitle: {
     fontSize: 18,
@@ -158,10 +155,13 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 20,
   },
-  editText: {
-    color: "#4CA2A3",
-    fontSize: 13,
-    fontWeight: "600",
+  editButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "#F5F7F8",
+    alignItems: "center",
+    justifyContent: "center",
   },
   entryImage: {
     width: "100%",
@@ -187,13 +187,14 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 10,
     right: 10,
+    width: 32,
+    height: 32,
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: "#F5F7F8",
     borderRadius: 20,
-    padding: 6,
   },
-  moodText: {
-    fontSize: 14,
-    color: "#1f2937",
-    fontWeight: "600",
+  moodEmoji: {
+    fontSize: 16,
   },
 });

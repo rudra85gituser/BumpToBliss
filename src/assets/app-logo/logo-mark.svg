@@ -1,0 +1,24 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bloomGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A5E1AD" />
+      <stop offset="55%" stop-color="#4CA2A3" />
+      <stop offset="100%" stop-color="#20094D" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1024" height="1024" fill="#20094D" />
+
+  <g transform="translate(512 512)">
+    <g transform="rotate(0)">
+      <path d="M0,0 C-82,-143 -82,-327 0,-440 C82,-327 82,-143 0,0 Z" fill="url(#bloomGrad)" />
+    </g>
+    <g transform="rotate(120)">
+      <path d="M0,0 C-82,-143 -82,-327 0,-440 C82,-327 82,-143 0,0 Z" fill="url(#bloomGrad)" />
+    </g>
+    <g transform="rotate(240)">
+      <path d="M0,0 C-82,-143 -82,-327 0,-440 C82,-327 82,-143 0,0 Z" fill="url(#bloomGrad)" />
+    </g>
+    <circle cx="0" cy="0" r="56" fill="#FBF6EC" />
+  </g>
+</svg>
