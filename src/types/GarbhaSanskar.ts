@@ -44,6 +44,15 @@ export type PregnancyStage = {
   documentId: string;
   stageNumber: number;
   stageType: 'day' | 'week' | 'month';
+  trimester: string | null;
+  title: string | null;
+  subtitle: string | null;
+  fetalSizeText: string | null;
+  fetalSizeComparison: string | null;
+  fetalHeightCm: number | null;
+  fetalWeightGrams: number | null;
+  description: string | null;
+  dayOfWeek: number | null;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
@@ -95,6 +104,7 @@ export type PregnancyContextType = {
   pregnancyStartDate: Date | null;
   pregnancyDay: number | null;
   pregnancyWeek: number | null;
+  isLoading: boolean;
   setPregnancyStartDate: (date: Date) => void;
   calculatePregnancyDay: (startDate: Date) => number;
   calculatePregnancyWeek: (startDate: Date) => number;

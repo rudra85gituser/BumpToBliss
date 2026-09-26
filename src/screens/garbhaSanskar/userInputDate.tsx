@@ -1,16 +1,16 @@
 "use client";
 
-import React, { useState } from 'react';
+import DateTimePicker from "@react-native-community/datetimepicker";
+import React, { useState } from "react";
 import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-  Platform,
   Modal,
-} from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { SafeAreaView } from 'react-native-safe-area-context';
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type UserInputDateProps = {
   onDateSelected: (date: Date, day: number, week: number) => void;
@@ -27,13 +27,26 @@ export default function UserInputDate({
   const [showPicker, setShowPicker] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleDateChange = (event: any, date?: Date) => {
-    if (date) {
+  const isValidDate = (date: unknown): date is Date =>
+    date instanceof Date && !Number.isNaN(date.getTime());
+
+  /**
+   * DateTimePicker v9 passes `(event, date)`. Keeping the event parameter
+   * prevents the event object being stored as the selected date on Android.
+   */
+  const handleDateChange = (_event: unknown, date?: Date) => {
+    if (isValidDate(date)) {
       setSelectedDate(date);
       setError(null);
-      if (Platform.OS === 'android') {
+      if (Platform.OS === "android") {
         setShowPicker(false);
       }
+    }
+  };
+
+  const handleDismiss = () => {
+    if (Platform.OS === "android") {
+      setShowPicker(false);
     }
   };
 
@@ -52,7 +65,7 @@ export default function UserInputDate({
   const handleCalculate = () => {
     const today = new Date();
     if (selectedDate > today) {
-      setError('Pregnancy start date cannot be in the future');
+      setError("Pregnancy start date cannot be in the future");
       return;
     }
 
@@ -63,10 +76,10 @@ export default function UserInputDate({
   };
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -86,15 +99,27 @@ export default function UserInputDate({
             style={styles.dateButton}
             onPress={() => setShowPicker(true)}
           >
-            <Text style={styles.dateButtonText}>{formatDate(selectedDate)}</Text>
+            <Text style={styles.dateButtonText}>
+              {formatDate(selectedDate)}
+            </Text>
           </TouchableOpacity>
 
+          {/* {showPicker && (
+            <DateTimePicker
+              value={selectedDate}
+              mode="date"
+              display={Platform.OS === "ios" ? "spinner" : "default"}
+              onChange={handleDateChange}
+              maximumDate={new Date()}
+            />
+          )} */}
           {showPicker && (
             <DateTimePicker
               value={selectedDate}
               mode="date"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={handleDateChange}
+              display={Platform.OS === "ios" ? "spinner" : "default"}
+              onValueChange={handleDateChange}
+              onDismiss={handleDismiss}
               maximumDate={new Date()}
             />
           )}
@@ -138,44 +163,44 @@ export default function UserInputDate({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
   },
   content: {
     flex: 1,
     paddingHorizontal: 20,
     paddingVertical: 24,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   title: {
     fontSize: 24,
-    fontWeight: '700',
-    color: '#1f2937',
+    fontWeight: "700",
+    color: "#1f2937",
     marginBottom: 8,
-    textAlign: 'center',
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: "#6b7280",
     marginBottom: 24,
-    textAlign: 'center',
+    textAlign: "center",
   },
   dateButton: {
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     paddingVertical: 16,
     paddingHorizontal: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: "#e5e7eb",
     marginBottom: 24,
-    alignItems: 'center',
+    alignItems: "center",
   },
   dateButtonText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#20094D',
+    fontWeight: "600",
+    color: "#20094D",
   },
   infoSection: {
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     paddingHorizontal: 16,
     paddingVertical: 20,
     borderRadius: 12,
@@ -183,63 +208,63 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#1f2937',
+    fontWeight: "600",
+    color: "#1f2937",
     marginBottom: 16,
   },
   infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
   },
   infoPill: {
-    backgroundColor: '#f0f9ff',
+    backgroundColor: "#f0f9ff",
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
     marginHorizontal: 8,
   },
   infoValue: {
     fontSize: 28,
-    fontWeight: '700',
-    color: '#20094D',
+    fontWeight: "700",
+    color: "#20094D",
   },
   infoUnit: {
     fontSize: 12,
-    color: '#6b7280',
+    color: "#6b7280",
     marginTop: 4,
   },
   errorText: {
     fontSize: 13,
-    color: '#dc2626',
+    color: "#dc2626",
     marginBottom: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   buttonContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
   },
   button: {
     flex: 1,
     paddingVertical: 14,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
   cancelButton: {
-    backgroundColor: '#f3f4f6',
+    backgroundColor: "#f3f4f6",
   },
   cancelButtonText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#6b7280',
+    fontWeight: "600",
+    color: "#6b7280",
   },
   submitButton: {
-    backgroundColor: '#20094D',
+    backgroundColor: "#20094D",
   },
   submitButtonText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#ffffff',
+    fontWeight: "600",
+    color: "#ffffff",
   },
 });

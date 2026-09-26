@@ -61,15 +61,27 @@ export const upsertUserProfile = async (
   };
 
   if (supabase) {
-    const { data, error } = await supabase
-      .from("profiles")
-      .upsert(nextProfile, { onConflict: "id" })
-      .select()
-      .single();
+    // Without an active session (e.g. signup still pending email
+    // confirmation), auth.uid() is null server-side and this write would
+    // always be rejected by RLS, so skip it and go straight to the local
+    // fallback below instead of logging an expected failure as an error.
+    const { data: sessionData } = await supabase.auth.getSession();
 
-    if (!error && data) {
-      await setLocalProfile(data as UserProfile);
-      return data as UserProfile;
+    if (sessionData.session) {
+      const { data, error } = await supabase
+        .from("profiles")
+        .upsert(nextProfile, { onConflict: "id" })
+        .select()
+        .single();
+
+      if (!error && data) {
+        await setLocalProfile(data as UserProfile);
+        return data as UserProfile;
+      }
+
+      if (error) {
+        console.error("🩺 upsertUserProfile: Supabase write failed", error);
+      }
     }
   }
 
@@ -125,4 +137,15 @@ export const addUserRecord = async <T extends { id: string }>(
 ): Promise<T[]> => {
   const rows = await getUserCollection<T>(userId, scope);
   return setUserCollection(userId, scope, [record, ...rows]);
+};
+
+export const updateUserRecord = async <T extends { id: string }>(
+  userId: string,
+  scope: string,
+  id: string,
+  updates: Partial<T>,
+): Promise<T[]> => {
+  const rows = await getUserCollection<T>(userId, scope);
+  const nextRows = rows.map((row) => (row.id === id ? { ...row, ...updates } : row));
+  return setUserCollection(userId, scope, nextRows);
 };

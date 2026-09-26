@@ -13,7 +13,7 @@ export default function Index() {
   useEffect(() => {
     if (isLoading) return;
 
-    router.replace(isAuthenticated ? "/(tabs)/home-wrapper" : "/auth/login");
+    router.replace(isAuthenticated ? "/(tabs)/home-wrapper" : "/auth/signup");
   }, [isAuthenticated, isLoading, router]);
 
   return (
